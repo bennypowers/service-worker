@@ -25,7 +25,7 @@
     "max-len": ["warn", {
       "ignoreTemplateLiterals": true,
       "ignoreStrings": true,
-      "ignoreTrailingComments": true,
+      "ignoreComments": true,
       "ignoreUrls": true
       }]
   },
