@@ -9,7 +9,7 @@
   "scripts": {
     "lint:polymer": "npx polymer lint",
     "lint:eslint": "npx eslint . --ext .html,.js,.json",
-    "test": "npx polymer test",
+    "test": "npm run lint && npx polymer test",
     "lint": "npm run lint:eslint && npm run lint:polymer"
   },
   "repository": {
