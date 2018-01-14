@@ -85,7 +85,10 @@
         };
       }
 
-      /** Register the service worker. */
+      /**
+       * Checks for SW support and registers the service worker.
+       * @protected
+       */
       connectedCallback() {
         super.connectedCallback();
         const {autoReload, path, scope} = this;
@@ -97,12 +100,16 @@
        * Miniature AppLocalizeBehavior implementation, without Intl.
        * @param  {String} key localization address
        * @return {String}     localized string
+       * @protected
        */
       localize(key) {
         return this.resources[this.language][key];
       }
 
-      /** Display a toast prompting the user to update the service worker. */
+      /**
+       * Display a toast prompting the user to update the service worker.
+       * @protected
+       */
       async openToast() {
         const {failed, loaded} = await this.importLazyGroup('toast');
         if (failed.length && !loaded.length) return;
