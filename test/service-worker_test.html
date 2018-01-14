@@ -26,7 +26,8 @@
     </test-fixture>
 
     <script>
-      suite('service-worker', () => {
+    if ('serviceWorker' in navigator) {
+      suite('serviceWorker supported', () => {
         test('instantiating the element with default properties works', () => {
           const element = fixture('BasicTestFixture');
           assert.equal(element.path, '/service-worker.js');
@@ -42,6 +43,13 @@
         // TODO: toasting and reloading
         // TODO: i18n
       });
+    } else {
+      suite('serviceWorker not supported', () => {
+        test('element is not defined', () => {
+          assert.isNotOk(customElements.get('service-worker'));
+        });
+      });
+    }
     </script>
 
   </body>
