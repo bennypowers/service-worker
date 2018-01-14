@@ -1,0 +1,158 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../lazy-imports/lazy-imports-mixin.html">
+
+<dom-module id="service-worker">
+  <link rel="lazy-import" href="../paper-button/paper-button.html" group="toast">
+  <link rel="lazy-import" href="../paper-toast/paper-toast.html" group="toast">
+  <script>
+    class ServiceWorker extends Polymer.LazyImportsMixin(Polymer.Element) {
+      static get is() {return 'service-worker';}
+
+      static get properties() {
+        return {
+
+          /**
+           * If true, when updates are found, the page will automatically
+           * reload, so long as the user has not yet interacted with it.
+           */
+          autoReload: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * language for strings.
+           * e.g. 'he'. defaults to first 2 chars of document lang or 'en'.
+           */
+          language: {
+            type: String,
+            value: document.documentElement.lang.substring(0, 2) || 'en',
+          },
+
+          /** Path to the service worker script. */
+          path: {
+            type: String,
+            value: '/service-worker.js',
+          },
+
+          /** i18n strings. */
+          resources: {
+            type: Object,
+            value: () => ({
+
+              en: {
+                newVersion: 'New Version',
+                clickToUpdate: 'Click to Update',
+              },
+
+              he: {
+                newVersion: 'גרסה חדשה',
+                clickToUpdate: 'לחץ לעדכן',
+              },
+
+            }),
+          },
+
+          /** Scope for the service worker. */
+          scope: {
+            type: String,
+            value: Polymer.rootPath || '/',
+          },
+
+        };
+      }
+
+      /** Register the service worker. */
+      connectedCallback() {
+        super.connectedCallback();
+        const {autoReload, path, scope} = this;
+        if ('serviceWorker' in navigator)
+          this.registerServiceWorker({autoReload, path, scope});
+      }
+
+      /**
+       * Miniature AppLocalizeBehavior implementation, without Intl.
+       * @param  {String} key localization address
+       * @return {String}     localized string
+       */
+      localize(key) {
+        return this.resources[this.language][key];
+      }
+
+      /** Display a toast prompting the user to update the service worker. */
+      async openToast() {
+        const {failed, loaded} = await this.importLazyGroup('toast');
+        if (failed.length && !loaded.length) return;
+        const button = document.createElement('paper-button');
+              button.id = 'serviceWorkerToastButton';
+              button.innerHTML = this.localize('clickToUpdate');
+              button.onclick = window.location.reload;
+              button.style.color = 'var(--service-worker-button-color, var(--paper-yellow-400, #FFEE58))';
+        const toast = document.createElement('paper-toast');
+              toast.id = 'serviceWorkerToast';
+              toast.duration = Infinity;
+              toast.text = this.localize('newVersion');
+              toast.appendChild(button);
+        document.body.appendChild(toast);
+      }
+
+      /**
+       * Registers a service worker, and prompts to update as needed
+       * @param  {Boolean} [$0.autoReload=this.autoReload]  Path to the sw script
+       * @param  {String}  [$0.path=this.path]              Path to the sw script
+       * @param  {String}  [$0.scope=this.scope]            Scope of the sw
+       * @return {Promise}
+       */
+      async registerServiceWorker({autoReload, path, scope} = this) {
+        let shouldToast = true;
+
+        // When an update is found, if user has not yet interacted with the page,
+        // reload it for them, otherwise, prompt them to reload 🍩.
+        const update = () => shouldToast
+          ? this.openToast()
+          : location.reload();
+
+        // Listen for changes on a new worker, toast when installed. 🍞
+        const track = (serviceWorker) =>
+          serviceWorker.onstatechange = () =>
+            (serviceWorker.state === 'installed') && update();
+
+        if (autoReload) {
+          shouldToast = false;
+          // Check whether the use has interacted with the page yet.
+          const onInteraction = () => {
+            shouldToast = true;
+            document.removeEventListener('click', onInteraction);
+            document.removeEventListener('keyup', onInteraction);
+          };
+          document.addEventListener('click', onInteraction);
+          document.addEventListener('keyup', onInteraction);
+        }
+
+        // Register the service worker
+        let reg;
+        try {
+          reg = await navigator.serviceWorker.register(path, {scope});
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.info('Could not register service worker.', error);
+          return reg;
+        }
+
+        // If there's no previous SW, quit early - this page load is fresh. 🍌
+        if (!navigator.serviceWorker.controller) return 'Page fresh.';
+
+        // A new SW is already waiting to activate. Update. 👯
+        else if (reg.waiting) return update();
+
+        // A new SW is installing. Listen for updates, toast when installed. 🍻
+        else if (reg.installing) track(reg.installing);
+
+        // Otherwise, when a new service worker arrives, listen for updates,
+        // and if it becomes installed, toast the user. 🍷
+        else reg.onupdatefound = () => track(reg.installing);
+      }
+    }
+    customElements.define(ServiceWorker.is, ServiceWorker);
+  </script>
+</dom-module>

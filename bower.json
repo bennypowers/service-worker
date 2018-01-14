@@ -1,0 +1,21 @@
+{
+  "name": "service-worker",
+  "authors": ["Benny Powers <benny.p@elasticmedia.io"],
+  "license": "GPL-3.0",
+  "description": "Custom Element for declaratively adding a service worker with \"Click To Update\" prompt and optional auto-install.",
+  "main": "service-worker.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "paper-toast": "PolymerElements/paper-toast#^2.0.0",
+    "lazy-imports": "Polymer/lazy-imports#^2.1.0"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0"
+  }
+}

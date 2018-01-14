@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0.0",
+  "elements": [
+    {
+      "description": "",
+      "summary": "",
+      "path": "service-worker.html",
+      "properties": [
+        {
+          "name": "autoReload",
+          "type": "boolean",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 17,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "language",
+          "type": "string",
+          "description": "language for strings.\ne.g. 'he'. defaults to first 2 chars of document lang or 'en'.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 26,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "description": "Path to the service worker script.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 32,
+              "column": 10
+            },
+            "end": {
+              "line": 35,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"/service-worker.js\""
+        },
+        {
+          "name": "resources",
+          "type": "Object",
+          "description": "i18n strings.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 38,
+              "column": 10
+            },
+            "end": {
+              "line": 53,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "description": "Scope for the service worker.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 56,
+              "column": 10
+            },
+            "end": {
+              "line": 59,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "connectedCallback",
+          "description": "Register the service worker.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 65,
+              "column": 6
+            },
+            "end": {
+              "line": 70,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "localize",
+          "description": "Miniature AppLocalizeBehavior implementation, without Intl.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 77,
+              "column": 6
+            },
+            "end": {
+              "line": 79,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "key",
+              "type": "String",
+              "description": "localization address"
+            }
+          ],
+          "return": {
+            "type": "String",
+            "desc": "localized string"
+          }
+        },
+        {
+          "name": "openToast",
+          "description": "Display a toast prompting the user to update the service worker.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 82,
+              "column": 6
+            },
+            "end": {
+              "line": 96,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "registerServiceWorker",
+          "description": "Registers a service worker, and prompts to update as needed",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 105,
+              "column": 6
+            },
+            "end": {
+              "line": 153,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "{autoReload, path, scope} = this"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 7,
+          "column": 4
+        },
+        "end": {
+          "line": 154,
+          "column": 5
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "ServiceWorker",
+      "attributes": [
+        {
+          "name": "auto-reload",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "sourceRange": {
+            "start": {
+              "line": 17,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "language",
+          "description": "language for strings.\ne.g. 'he'. defaults to first 2 chars of document lang or 'en'.",
+          "sourceRange": {
+            "start": {
+              "line": 26,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "description": "Path to the service worker script.",
+          "sourceRange": {
+            "start": {
+              "line": 32,
+              "column": 10
+            },
+            "end": {
+              "line": 35,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "resources",
+          "description": "i18n strings.",
+          "sourceRange": {
+            "start": {
+              "line": 38,
+              "column": 10
+            },
+            "end": {
+              "line": 53,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "scope",
+          "description": "Scope for the service worker.",
+          "sourceRange": {
+            "start": {
+              "line": 56,
+              "column": 10
+            },
+            "end": {
+              "line": 59,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "service-worker"
+    }
+  ]
+}
