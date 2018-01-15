@@ -28,9 +28,29 @@
     <script>
     if ('serviceWorker' in navigator) {
       suite('serviceWorker supported', () => {
-        test('instantiating the element with default properties works', () => {
+        test('instantiating the element works', () => {
+          const element = fixture('BasicTestFixture');
+          assert.equal(element.constructor.is, 'service-worker');
+        });
+
+        test('default path is correct', () => {
           const element = fixture('BasicTestFixture');
           assert.equal(element.path, '/service-worker.js');
+        });
+
+        test('default scope is correct', () => {
+          const element = fixture('BasicTestFixture');
+          assert.equal(element.scope, '/');
+        });
+
+        test('default autoReload value is correct', () => {
+          const element = fixture('BasicTestFixture');
+          assert.equal(element.autoReload, false);
+        });
+
+        test('default updateAction is correct', () => {
+          const element = fixture('BasicTestFixture');
+          assert.equal(element.updateAction, 'skipWaiting');
         });
 
         test('setting a property on the element works', () => {
