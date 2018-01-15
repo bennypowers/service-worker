@@ -110,17 +110,21 @@
           const {failed, loaded} = await this.importLazyGroup('toast');
           if (failed.length && !loaded.length) return;
 
-          const button = document.createElement('paper-button');
-                button.id = 'serviceWorkerToastButton';
-                button.innerHTML = this.localize('clickToUpdate');
-                button.onclick = window.location.reload;
-                button.style.color = 'var(--service-worker-button-color, var(--paper-yellow-400, #FFEE58))';
-          const toast = document.createElement('paper-toast');
-                toast.id = 'serviceWorkerToast';
-                toast.duration = Infinity;
-                toast.text = this.localize('newVersion');
-                toast.appendChild(button);
-          document.body.appendChild(toast);
+          if (!this.constructor.toast) {
+            const button = document.createElement('paper-button');
+                  button.id = 'serviceWorkerToastButton';
+                  button.innerHTML = this.localize('clickToUpdate');
+                  button.onclick = () => window.location.reload();
+                  button.style.color = 'var(--service-worker-button-color, var(--paper-yellow-400, #FFEE58))';
+            const toast = document.createElement('paper-toast');
+                  toast.id = 'serviceWorkerToast';
+                  toast.duration = Infinity;
+                  toast.text = this.localize('newVersion');
+                  toast.appendChild(button);
+            this.constructor.toast = toast;
+            document.body.appendChild(toast);
+          }
+          this.constructor.toast.open();
         }
 
         /**
