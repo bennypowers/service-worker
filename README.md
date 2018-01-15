@@ -1,4 +1,6 @@
 # \<service-worker\>
+[![Build Status](https://travis-ci.org/bennypowers/service-worker.svg?branch=master)](https://travis-ci.org/bennypowers/service-worker)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/service-worker)
 
 Custom Element for declaratively adding a service worker with "Click To Update" prompt and optional auto-install.
 
