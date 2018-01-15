@@ -4,3 +4,6 @@ self.addEventListener('message', event =>
     allClients.forEach(client =>
       client.postMessage({msg: 'Service Worker Poked! 🎉'})
 ))));
+
+self.addEventListener('message', ({data: {action} = {}} = {}) =>
+  (action === 'skipWaiting') ? self.skipWaiting() : undefined);

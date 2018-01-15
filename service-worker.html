@@ -83,13 +83,22 @@
               value: '/',
             },
 
+            /**
+             * String passed to serviceWorker which triggers self.skipWaiting().
+             * String will be passed in message.action.
+             */
+            updateAction: {
+              type: String,
+              value: 'skipWaiting',
+            },
+
           };
         }
 
         connectedCallback() {
           super.connectedCallback();
-          const {autoReload, path, scope} = this;
-          this.registerServiceWorker({autoReload, path, scope});
+          const {autoReload, path, scope, updateAction} = this;
+          this.registerServiceWorker({autoReload, path, scope, updateAction});
         }
 
         /**
@@ -132,21 +141,24 @@
          * @param  {Boolean} [$0.autoReload=this.autoReload]  Path to the sw script
          * @param  {String}  [$0.path=this.path]              Path to the sw script
          * @param  {String}  [$0.scope=this.scope]            Scope of the sw
+         * @param  {String}  [$0.updateAction=this.updateAction] action to trigger the sw update.
          * @return {Promise}
          */
-        async registerServiceWorker({autoReload, path, scope} = this) {
+        async registerServiceWorker({autoReload, path, scope, updateAction}) {
+          if (!path || !scope || !updateAction) return;
           let shouldToast = true;
 
           // When an update is found, if user has not yet interacted with the page,
           // reload it for them, otherwise, prompt them to reload 🍩.
-          const update = () => shouldToast
-            ? this.openToast()
-            : location.reload();
+          const update = (serviceWorker) => {
+            serviceWorker.postMessage({action: updateAction});
+            shouldToast ? this.openToast() : location.reload();
+          };
 
           // Listen for changes on a new worker, toast when installed. 🍞
           const track = (serviceWorker) =>
             serviceWorker.onstatechange = () =>
-              (serviceWorker.state === 'installed') && update();
+              (serviceWorker.state === 'installed') && update(serviceWorker);
 
           if (autoReload) {
             shouldToast = false;
@@ -174,7 +186,7 @@
           if (!navigator.serviceWorker.controller) return 'Page fresh.';
 
           // A new SW is already waiting to activate. Update. 👯
-          else if (reg.waiting) return update();
+          else if (reg.waiting) return update(reg.waiting);
 
           // A new SW is installing. Listen for updates, toast when installed. 🍻
           else if (reg.installing) track(reg.installing);
