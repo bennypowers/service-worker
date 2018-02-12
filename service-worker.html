@@ -92,6 +92,14 @@
               value: 'skipWaiting',
             },
 
+            /** Reference to the active worker. */
+            worker: {
+              type: Object,
+              readOnly: true,
+              value: null,
+              notify: true,
+            },
+
           };
         }
 
@@ -181,6 +189,8 @@
             console.info('Could not register service worker.', error);
             return reg;
           }
+
+          if (reg.active) this._setWorker(reg.active);
 
           // If there's no previous SW, quit early - this page load is fresh. 🍌
           if (!navigator.serviceWorker.controller) return 'Page fresh.';
