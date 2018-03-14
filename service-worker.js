@@ -1,6 +1,6 @@
-import { Element } from '../@polymer/polymer/polymer-element.js';
-import '../@polymer/paper-button/paper-button.js';
-import '../@polymer/paper-toast/paper-toast.js';
+import { Element } from '../../@polymer/polymer/polymer-element.js';
+import '../../@polymer/paper-button/paper-button.js';
+import '../../@polymer/paper-toast/paper-toast.js';
 
 if ('serviceWorker' in navigator) {
   /**
