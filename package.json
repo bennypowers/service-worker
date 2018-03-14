@@ -1,5 +1,5 @@
 {
-  "name": "service-worker",
+  "name": "@power-elements/service-worker",
   "version": "1.0.0",
   "description": "Custom Element for declaratively adding a service worker with \"Click To Update\" prompt and optional auto-install.",
   "main": "service-worker.html",
