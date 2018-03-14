@@ -33,6 +33,7 @@
     "eslint-plugin-html": "^4.0.1",
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-no-loops": "^0.3.0",
-    "polymer-cli": "^1.5.7"
+    "polymer-cli": "^0.18.1",
+    "polymer-modulizer": "^0.3.0"
   }
 }
