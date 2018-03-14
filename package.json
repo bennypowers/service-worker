@@ -35,5 +35,10 @@
     "eslint-plugin-no-loops": "^0.3.0",
     "polymer-cli": "^0.18.1",
     "polymer-modulizer": "^0.3.0"
+  },
+  "dependencies": {
+    "@polymer/paper-button": "^3.0.0-pre.11",
+    "@polymer/paper-toast": "^3.0.0-pre.11",
+    "@polymer/polymer": "^3.0.0-pre.11"
   }
 }
