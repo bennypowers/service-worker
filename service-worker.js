@@ -60,12 +60,14 @@ if ('serviceWorker' in navigator) {
             value: () => ({
 
               en: {
-                newVersion: 'New Version',
+                newVersion: 'New Version Ready',
+                ok: 'OK',
                 clickToUpdate: 'Click to Update',
               },
 
               he: {
                 newVersion: 'גרסה חדשה',
+                ok: 'בסדר',
                 clickToUpdate: 'לחץ לעדכן',
               },
 
@@ -125,11 +127,16 @@ if ('serviceWorker' in navigator) {
                 button.innerHTML = this.localize('clickToUpdate');
                 button.onclick = () => window.location.reload();
                 button.style.color = 'var(--service-worker-button-color, var(--paper-yellow-400, #FFEE58))';
+          const close = document.createElement('paper-button');
+                close.id = 'serviceWorkerCloseButton';
+                close.innerHTML = this.localize('ok');
+                close.onclick = () => toast.close();
           const toast = document.createElement('paper-toast');
                 toast.id = 'serviceWorkerToast';
                 toast.duration = Infinity;
                 toast.text = this.localize('newVersion');
                 toast.appendChild(button);
+                toast.appendChild(close);
           this.toast = toast;
           document.body.appendChild(toast);
         }
