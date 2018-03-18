@@ -80,6 +80,12 @@ if ('serviceWorker' in navigator) {
             value: '/',
           },
 
+          /** Duration of the toast. */
+          toastDuration: {
+            type: Number,
+            value: 10000,
+          },
+
           /**
            * String passed to serviceWorker which triggers self.skipWaiting().
            * String will be passed in message.action.
@@ -133,7 +139,7 @@ if ('serviceWorker' in navigator) {
                 close.onclick = () => toast.close();
           const toast = document.createElement('paper-toast');
                 toast.id = 'serviceWorkerToast';
-                toast.duration = Infinity;
+                toast.duration = this.toastDuration;
                 toast.text = this.localize('newVersion');
                 toast.appendChild(button);
                 toast.appendChild(close);
