@@ -1,6 +1,4 @@
 import { Element } from '../../@polymer/polymer/polymer-element.js';
-import '../../@polymer/paper-button/paper-button.js';
-import '../../@polymer/paper-toast/paper-toast.js';
 
 if ('serviceWorker' in navigator) {
   /**
@@ -128,6 +126,11 @@ if ('serviceWorker' in navigator) {
        */
       async openToast() {
         if (!this.toast) {
+          await Promise.all([
+            import('../../@polymer/paper-button/paper-button.js'),
+            import('../../@polymer/paper-toast/paper-toast.js'),
+          ]);
+
           const button = document.createElement('paper-button');
                 button.id = 'serviceWorkerToastButton';
                 button.innerHTML = this.localize('clickToUpdate');
