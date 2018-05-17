@@ -1,44 +1,19 @@
 {
   "name": "@power-elements/service-worker",
+  "flat": true,
   "version": "1.4.1",
   "description": "Custom Element for declaratively adding a service worker with \"Click To Update\" prompt and optional auto-install.",
-  "main": "service-worker.html",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "lint:polymer": "npx polymer lint",
-    "lint:eslint": "npx eslint . --ext .html,.js,.json",
-    "test": "npm run lint && npx polymer test",
-    "lint": "npm run lint:eslint && npm run lint:polymer"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/bennypowers/service-worker.git"
-  },
-  "keywords": [
-    "polymer",
-    "custom element",
-    "service worker"
+  "contributors": [
+    "Benny Powers <benny.p@blink.gg>"
   ],
-  "author": "Benny Powers",
+  "main": "service-worker.js",
   "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://gitlab.com/bennyp/service-worker/issues"
-  },
-  "homepage": "https://gitlab.com/bennyp/service-worker#README",
-  "devDependencies": {
-    "eslint": "^4.15.0",
-    "eslint-config-google": "^0.9.1",
-    "eslint-plugin-html": "^4.0.1",
-    "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-no-loops": "^0.3.0",
-    "polymer-cli": "^0.18.1",
-    "polymer-modulizer": "^0.3.0"
-  },
   "dependencies": {
-    "@polymer/paper-button": "^3.0.0-pre.11",
-    "@polymer/paper-toast": "^3.0.0-pre.11",
-    "@polymer/polymer": "^3.0.0-pre.11"
+    "lit-html": "^0.10.0"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
+    "@polymer/paper-button": "^3.0.0-pre.19",
+    "@webcomponents/webcomponentsjs": "^2.0.0"
   }
 }
