@@ -1,6 +1,7 @@
 if ('serviceWorker' in navigator) {
   /**
-   * Custom Element for declaratively adding a service worker with optional auto-update.
+   * Custom Element for declaratively adding a service worker
+   * with optional auto-update.
    *
    * ```html
    * <service-worker id="serviceWorker"
@@ -15,139 +16,203 @@ if ('serviceWorker' in navigator) {
    *
    * @demo demo/index.html
    */
-    class ServiceWorker extends HTMLElement {
-      static get is() {return;}
+  class ServiceWorker extends HTMLElement {
+    static get is() {return 'service-worker';}
 
-      static get observedAttributes() {
-        return [
-          'auto-reload',
-          'path',
-          'scope',
-          'update-action',
-        ];
-      }
+    static get observedAttributes() {
+      return [
+        'auto-reload',
+        'path',
+        'scope',
+        'update-action',
+      ];
+    }
 
-      constructor() {
-        super();
+    get autoReload() {
+      return this.__autoReload;
+    }
 
-        /**
-         * If true, when updates are found, the page will automatically
-         * reload, so long as the user has not yet interacted with it.
-         */
-        this.autoReload = false;
+    set autoReload(value) {
+      this.__autoReload = value;
+      value
+        ? this.setAttribute('auto-reload', '')
+        : this.removeAttribute('auto-reload');
+    }
 
-        /**
-         * Error state of the service-worker registration
-         * @type {Error|null}
-         */
-        this.error = null;
+    get path() {
+      return this.__path;
+    }
 
-        /** A reference to the service worker instance. */
-        this.worker = null;
+    set path(path) {
+      this.__path = path;
+      if (this.getAttribute('path') !== path) this.setAttribute('path', path);
+      this.registerServiceWorker({path});
+    }
 
-        /**
-         * String passed to serviceWorker which triggers self.skipWaiting().
-         * String will be passed in message.action.
-         */
-        this.updateAction = 'skipWaiting';
+    get scope() {
+      return this.__scope;
+    }
 
-        /** Scope for the service worker. */
-        this.scope = '/';
+    set scope(scope) {
+      this.__scope = scope;
+      if (this.getAttribute('scope') !== scope) this.setAttribute('scope', scope);
+      this.registerServiceWorker({scope});
+    }
 
-        /** Path to the service worker script. */
-        this.path = '/service-worker.js';
-      }
+    get updateAction() {
+      return this.__updateAction;
+    }
 
-      connectedCallback() {
-        const {autoReload, path, scope, updateAction} = this;
-        this.registerServiceWorker({autoReload, path, scope, updateAction});
-      }
+    set updateAction(action) {
+      this.__updateAction = action;
+      this.setAttribute('update-action', action);
+    }
 
-      attributeChangedCallback(name, newVal, oldVal) {
-        switch (name) {
-          case 'path':
-            this.path = newVal;
-            this.registerServiceWorker({path: newVal});
-            break;
-          case 'scope': this.scope = newVal; break;
-          case 'update-action': this.updateAction = newVal; break;
-          case 'auto-reload': this.autoReload = this.hasAttribute(name); break;
-        }
-      }
+    constructor() {
+      super();
 
       /**
-       * Registers a service worker, and prompts to update as needed
-       * @param  {Object} options Initialization options
-       * @param  {Boolean} [options.autoReload=this.autoReload]  Path to the sw script
-       * @param  {String}  [options.path=this.path]              Path to the sw script
-       * @param  {String}  [options.scope=this.scope]            Scope of the sw
-       * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
-       * @return {Promise}
+       * If true, when updates are found, the page will automatically
+       * reload, so long as the user has not yet interacted with it.
        */
-      async registerServiceWorker({
-        autoReload,
-        path,
-        scope,
-        updateAction: action,
-      }) {
-        if (!path || !scope || !action) return;
+      this.autoReload = false;
 
-        // When an update is found, if user has not yet interacted with the page,
-        // reload it for them, otherwise, prompt them to reload 🍩.
-        const update = (serviceWorker) => {
-          serviceWorker.postMessage({action});
-          this.dispatchEvent(new CustomEvent('service-worker-changed', {
-            bubbles: true,
-            composed: true,
-            detail: serviceWorker,
-          }));
-        };
+      /**
+       * Error state of the service-worker registration
+       * @type {Error|null}
+       */
+      this.error = null;
 
-        // Listen for changes on a new worker, notify when installed. 🍞
-        const track = (serviceWorker) =>
-          serviceWorker.onstatechange = () =>
-            (serviceWorker.state === 'installed') && update(serviceWorker);
+      /** A reference to the service worker instance. */
+      this.worker = null;
 
-        if (autoReload) {
-          // Check whether the use has interacted with the page yet.
-          const onInteraction = () => {
-            document.removeEventListener('click', onInteraction);
-            document.removeEventListener('keyup', onInteraction);
-          };
-          document.addEventListener('click', onInteraction);
-          document.addEventListener('keyup', onInteraction);
-        }
+      /**
+       * String passed to serviceWorker which triggers self.skipWaiting().
+       * String will be passed in message.action.
+       */
+      this.updateAction = 'skipWaiting';
 
-        // Register the service worker
-        let reg;
-        try {
-          reg = await navigator.serviceWorker.register(path, {scope});
-        } catch (error) {
-          this.error = error;
-          this.dispatchEvent(new CustomEvent('error-changed', {
-            bubbles: true,
-            composed: true,
-            error,
-          }));
-          return reg;
-        }
+      /** Scope for the service worker. */
+      this.scope = '/';
 
-        if (reg.active) update(reg.active);
+      /** Path to the service worker script. */
+      this.path = '/service-worker.js';
 
-        // If there's no previous SW, quit early - this page load is fresh. 🍌
-        if (!navigator.serviceWorker.controller) return 'Page fresh.';
+      this.onError = this.onError.bind(this);
+      this.onInteraction = this.onInteraction.bind(this);
+      this.onRegistration = this.onRegistration.bind(this);
+      this.track = this.track.bind(this);
+      this.update = this.update.bind(this);
 
-        // A new SW is already waiting to activate. Update. 👯
-        else if (reg.waiting) return update(reg.waiting);
+      // Check whether the use has interacted with the page yet.
+      document.addEventListener('click', this.onInteraction);
+      document.addEventListener('keyup', this.onInteraction);
+    }
 
-        // A new SW is installing. Listen for updates, notify when installed. 🍻
-        else if (reg.installing) track(reg.installing);
+    connectedCallback() {
+      this.setAttribute('aria-hidden', true);
+      this.registerServiceWorker();
+    }
 
-        // Otherwise, when a new service worker arrives, listen for updates,
-        // and if it becomes installed, notify the user. 🍷
-        else reg.onupdatefound = () => track(reg.installing);
+    attributeChangedCallback(name, newVal, oldVal) {
+      switch (name) {
+        case 'path': this.path = newVal; break;
+        case 'scope': this.scope = newVal; break;
+        case 'update-action': this.updateAction = newVal; break;
+        case 'auto-reload': this.autoReload = newVal; break;
       }
     }
 
-    customElements.define('service-worker', ServiceWorker);
+    fire(type, opts) {
+      return this.dispatchEvent(
+          new CustomEvent(type, {
+            bubbles: true,
+            composed: true,
+            ...opts,
+          })
+      );
+    }
+
+    onInteraction(event) {
+      this.interacted = true;
+      document.removeEventListener('click', this.onInteraction);
+      document.removeEventListener('keyup', this.onInteraction);
+    }
+
+    onError(error) {
+      this.error = error;
+      this.fire('error-changed', {error});
+      return error;
+    }
+
+    onRegistration(reg) {
+      if (reg.active) this.update(reg.active);
+
+      // If there's no previous SW, quit early - this page load is fresh. 🍌
+      if (!navigator.serviceWorker.controller) return 'Page fresh.';
+
+      // A new SW is already waiting to activate. Update. 👯
+      else if (reg.waiting) return this.update(reg.waiting);
+
+      // A new SW is installing.
+      // Listen for updates, then notify when installed. 🍻
+      else if (reg.installing) return this.track(reg.installing);
+
+      // Otherwise, when a new service worker arrives, listen for updates,
+      // and if it becomes installed, notify the user. 🍷
+      else reg.onupdatefound = () =>
+        this.track(reg.installing);
+
+      return reg;
+    }
+
+    /**
+     * Registers a service worker, and prompts to update as needed
+     * @param  {Object} options Initialization options
+     * @param  {Boolean} [options.autoReload=this.autoReload]  Path to the sw script
+     * @param  {String}  [options.path=this.path]              Path to the sw script
+     * @param  {String}  [options.scope=this.scope]            Scope of the sw
+     * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
+     * @return {Promise<ServiceWorkerRegistration>}
+     */
+    async registerServiceWorker({
+      autoReload = this.autoReload,
+      path = this.path,
+      scope = this.scope,
+      updateAction = this.updateAction,
+    }) {
+      return (path && scope && updateAction)
+        // Register the service worker
+        ? navigator.serviceWorker.register(path, {scope})
+            .then(this.onRegistration)
+            .catch(this.onError)
+        : null;
+    }
+
+    /**
+     * Listen for changes on a new worker, notify when installed. 🍞
+     * @param  {ServiceWorker} serviceWorker
+     * @return {ServiceWorker}
+     */
+    track(serviceWorker) {
+      serviceWorker.onstatechange = () =>
+        serviceWorker.state === 'installed'
+          ? this.update(serviceWorker)
+          : undefined;
+      return serviceWorker;
+    }
+
+    /**
+       * When an update is found, if user has not yet interacted with the page,
+       * reload it for them, otherwise, prompt them to reload 🍩.
+       * @param  {ServiceWorker} serviceWorker
+       */
+    update(serviceWorker) {
+      serviceWorker.postMessage({action: this.action});
+      this.fire('service-worker-changed', {detail: serviceWorker});
+      if (!this.interacted && this.autoReload) location.reload();
+    }
   }
+
+  customElements.define(ServiceWorker.is, ServiceWorker);
+}
