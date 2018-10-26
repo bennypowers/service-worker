@@ -45,8 +45,10 @@ if ('serviceWorker' in navigator) {
 
     set path(path) {
       this.__path = path;
-      if (this.getAttribute('path') !== path) this.setAttribute('path', path);
       this.registerServiceWorker({path});
+      if (this.getAttribute('path') !== path) {
+        this.setAttribute('path', path);
+      }
     }
 
     get scope() {
@@ -55,8 +57,10 @@ if ('serviceWorker' in navigator) {
 
     set scope(scope) {
       this.__scope = scope;
-      if (this.getAttribute('scope') !== scope) this.setAttribute('scope', scope);
       this.registerServiceWorker({scope});
+      if (this.getAttribute('scope') !== scope) {
+        this.setAttribute('scope', scope);
+      }
     }
 
     get updateAction() {
@@ -65,7 +69,9 @@ if ('serviceWorker' in navigator) {
 
     set updateAction(action) {
       this.__updateAction = action;
-      this.setAttribute('update-action', action);
+      if (this.getAttribute('update-action') !== action) {
+        this.setAttribute('update-action', action);
+      }
     }
 
     constructor() {
@@ -114,7 +120,7 @@ if ('serviceWorker' in navigator) {
       this.registerServiceWorker();
     }
 
-    attributeChangedCallback(name, newVal, oldVal) {
+    attributeChangedCallback(name, oldVal, newVal) {
       switch (name) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
@@ -180,13 +186,11 @@ if ('serviceWorker' in navigator) {
       path = this.path,
       scope = this.scope,
       updateAction = this.updateAction,
-    }) {
-      return (path && scope && updateAction)
-        // Register the service worker
-        ? navigator.serviceWorker.register(path, {scope})
+    } = {}) {
+      return (!path || !scope || !updateAction) ? undefined
+        : navigator.serviceWorker.register(path, {scope})
             .then(this.onRegistration)
-            .catch(this.onError)
-        : null;
+            .catch(this.onError);
     }
 
     /**
@@ -196,9 +200,8 @@ if ('serviceWorker' in navigator) {
      */
     track(serviceWorker) {
       serviceWorker.onstatechange = () =>
-        serviceWorker.state === 'installed'
-          ? this.update(serviceWorker)
-          : undefined;
+        serviceWorker.state !== 'installed' ? undefined
+          : this.update(serviceWorker);
       return serviceWorker;
     }
 
@@ -206,11 +209,13 @@ if ('serviceWorker' in navigator) {
        * When an update is found, if user has not yet interacted with the page,
        * reload it for them, otherwise, prompt them to reload 🍩.
        * @param  {ServiceWorker} serviceWorker
+       * @return {ServiceWorker}
        */
     update(serviceWorker) {
       serviceWorker.postMessage({action: this.action});
       this.fire('service-worker-changed', {detail: serviceWorker});
       if (!this.interacted && this.autoReload) location.reload();
+      return serviceWorker;
     }
   }
 

@@ -6,8 +6,8 @@
 
     <title>service-worker test</title>
 
-    <script src="@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="web-component-tester/browser.js"></script>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="/node_modules/web-component-tester/browser.js"></script>
 
     <script type="module" src="../service-worker.js"></script>
   </head>
@@ -54,7 +54,7 @@ if ('serviceWorker' in navigator) {
       assert.equal(element.updateAction, 'skipWaiting');
     });
 
-    test('setting a property on the element works', () => {
+    test('setting path attribute sets path property', () => {
       const element = fixture('ChangedPropertyTestFixture');
       assert.equal(element.path, './sw.js');
     });
