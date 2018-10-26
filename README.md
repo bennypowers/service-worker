@@ -39,8 +39,8 @@ document.querySelector('service-worker')
       <button id="sw-dialog-confirm">OK</button>
       <button id="sw-dialog-cancel">Cancel</button>
     `;
-    dialog.querySelector('sw-dialog-cancel').onclick = () => dialog.close();
-    dialog.querySelector('sw-dialog-confirm').onclick = () => location.reload();
+    dialog.querySelector('#sw-dialog-cancel').onclick = () => dialog.close();
+    dialog.querySelector('#sw-dialog-confirm').onclick = () => location.reload();
     dialog.showModal();
   })
 ```
