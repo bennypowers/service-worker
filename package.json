@@ -2,6 +2,7 @@
   "name": "@power-elements/service-worker",
   "flat": true,
   "version": "3.1.0",
+  "license": "ISC",
   "description": "Custom Element for declaratively adding a service worker with optional auto-install.",
   "contributors": [
     "Benny Powers <benny.p@blink.gg>"
@@ -10,7 +11,6 @@
     "test": "polymer test"
   },
   "main": "service-worker.js",
-  "license": "GPL-3.0",
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
     "@polymer/paper-button": "^3.0.0-pre.19",
