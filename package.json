@@ -12,15 +12,15 @@
   },
   "main": "service-worker.js",
   "devDependencies": {
-    "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
-    "@polymer/paper-button": "^3.0.0-pre.19",
-    "@webcomponents/webcomponentsjs": "^2.1.3",
-    "eslint": "^5.7.0",
-    "eslint-config-google": "^0.11.0",
-    "eslint-plugin-html": "^4.0.6",
+    "@polymer/iron-demo-helpers": "^3.0.2",
+    "@polymer/paper-button": "^3.0.1",
+    "@webcomponents/webcomponentsjs": "^2.2.7",
+    "eslint": "^5.14.1",
+    "eslint-config-google": "^0.12.0",
+    "eslint-plugin-html": "^5.0.3",
     "eslint-plugin-no-loops": "^0.3.0",
-    "polymer-cli": "^1.8.1",
+    "polymer-cli": "^1.9.6",
     "wct-browser-legacy": "^1.0.2",
-    "web-component-tester": "^6.9.0"
+    "web-component-tester": "^6.9.2"
   }
 }
