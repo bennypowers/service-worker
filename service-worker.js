@@ -38,9 +38,8 @@ if ('serviceWorker' in navigator) {
 
     set autoReload(value) {
       this.__autoReload = value;
-      value
-        ? this.setAttribute('auto-reload', '')
-        : this.removeAttribute('auto-reload');
+      if (!value) this.removeAttribute('auto-reload');
+      if (value && !this.hasAttribute('auto-reload')) this.setAttribute('auto-reload', '')
     }
 
     /** Path to the service worker script. */
