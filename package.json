@@ -1,7 +1,7 @@
 {
   "name": "@power-elements/service-worker",
   "flat": true,
-  "version": "3.1.3",
+  "version": "3.1.4",
   "license": "ISC",
   "description": "Custom Element for declaratively adding a service worker with optional auto-install.",
   "contributors": [
