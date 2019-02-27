@@ -221,7 +221,12 @@ if ('serviceWorker' in navigator) {
     update(serviceWorker) {
       serviceWorker.postMessage({action: this.action});
       this.fire('service-worker-changed', {detail: serviceWorker});
-      if (!this.interacted && this.autoReload) location.reload();
+      const shouldReload = (
+        !this.interacted &&
+        this.autoReload &&
+        serviceWorker.state === 'waiting'
+      );
+      if (shouldReload) location.reload();
       return serviceWorker;
     }
   }
