@@ -123,7 +123,7 @@ if ('serviceWorker' in navigator) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
         case 'update-action': this.updateAction = newVal; break;
-        case 'auto-reload': this.autoReload = newVal; break;
+        case 'auto-reload': this.autoReload = newVal || newVal === ""; break;
       }
     }
 
