@@ -219,14 +219,14 @@ if ('serviceWorker' in navigator) {
        * @return {ServiceWorker}
        */
     update(serviceWorker) {
-      serviceWorker.postMessage({action: this.action});
-      this.fire('service-worker-changed', {detail: serviceWorker});
-      const shouldReload = (
-        !this.interacted &&
-        this.autoReload &&
-        serviceWorker.state === 'waiting'
-      );
-      if (shouldReload) location.reload();
+      const detail = serviceWorker
+      const installed = serviceWorker.state === 'installed'
+      const { interacted, autoReload, action } = this;
+
+      if (installed) serviceWorker.postMessage({action});
+      if (!interacted && autoReload && installed) location.reload();
+
+      this.fire('service-worker-changed', {detail});
       return serviceWorker;
     }
   }
