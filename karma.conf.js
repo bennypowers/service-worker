@@ -14,6 +14,7 @@ module.exports = (config) => {
           '/service-worker.js': '/base/test/service-workers/service-worker.js',
           '/test-sw.js': '/base/test/service-workers/test-sw.js',
           '/new-sw.js': '/base/test/service-workers/new-sw.js',
+          '/broadcast-sw.js': '/base/test/service-workers/broadcast-sw.js',
           '/sw.js': '/base/test/service-workers/sw.js',
         },
         esm: {

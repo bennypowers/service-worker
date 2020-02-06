@@ -207,9 +207,6 @@ if ('serviceWorker' in navigator) {
     });
 
     describe('when service worker is installed', function() {
-      beforeEach(unregisterAllServiceWorkers);
-      afterEach(unregisterAllServiceWorkers);
-
       it('fires the change event', async function() {
         const element = await fixture('<service-worker path="test-sw.js"></service-worker>');
         const event = await oneEvent(element, 'change');
@@ -218,7 +215,7 @@ if ('serviceWorker' in navigator) {
       });
 
       it('receives messages on the broadcast channel', async function() {
-        const element = await fixture('<service-worker path="test-sw.js"></service-worker>');
+        const element = await fixture('<service-worker path="broadcast-sw.js"></service-worker>');
         const {detail} = await oneEvent(element, 'message');
         expect(detail.data.action).to.equal('install');
       });

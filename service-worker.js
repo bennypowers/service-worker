@@ -15,6 +15,7 @@ if ('serviceWorker' in navigator) {
    * @element service-worker
    * @fires 'change' - When the service worker changes
    * @fires 'error' - When an error occurs
+   * @fires 'message' - When a message is received on the broadcast channel
    */
   class ServiceWorker extends HTMLElement {
     static get is() {return 'service-worker';}
@@ -22,6 +23,7 @@ if ('serviceWorker' in navigator) {
     static get observedAttributes() {
       return [
         'auto-reload',
+        'channel-name',
         'path',
         'scope',
         'update-action',
@@ -62,6 +64,22 @@ if ('serviceWorker' in navigator) {
         this.removeAttribute('error');
 
       this.__error = value;
+    }
+
+    /**
+     * Channel name for communicating with the service worker.
+     * @type {string}
+     * @attr channel-name
+     */
+    get channelName() {
+      return this.__channelName;
+    }
+
+    set channelName(channelName) {
+      this.__channelName = channelName;
+      if (channelName != null) this.setAttribute('channel-name', channelName);
+      else this.removeAttribute('channel-name');
+      this.registerServiceWorker({channelName});
     }
 
     /**
@@ -137,7 +155,11 @@ if ('serviceWorker' in navigator) {
 
       this.error = null;
 
+      this.channelName = this.getAttribute('channel-name') || 'service-worker';
 
+      this.channel = new BroadcastChannel(this.channelName);
+
+      this.channel.addEventListener('message', (event) => this.fire('message', {detail: event}));
 
       this.path = this.getAttribute('path') || '/service-worker.js';
 
@@ -166,6 +188,7 @@ if ('serviceWorker' in navigator) {
       switch (name) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
+        case 'channel-name': this.channelName = newVal; break;
         case 'update-action': this.updateAction = newVal; break;
         case 'auto-reload': this.autoReload = !!newVal || newVal === ''; break;
       }
@@ -269,6 +292,7 @@ if ('serviceWorker' in navigator) {
       return serviceWorker;
     }
 
+    /** @private */
     refresh() {
       window.location.reload();
     }

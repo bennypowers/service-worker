@@ -14,8 +14,7 @@
         {
           "name": "update-action",
           "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
-          "type": "string",
-          "default": "\"skipWaiting\""
+          "type": "string"
         },
         {
           "name": "error",
@@ -23,16 +22,19 @@
           "type": "Error"
         },
         {
+          "name": "channel-name",
+          "description": "Channel name for communicating with the service worker.",
+          "type": "string"
+        },
+        {
           "name": "path",
           "description": "Path to the service worker script.",
-          "type": "string",
-          "default": "\"/service-worker.js\""
+          "type": "string"
         },
         {
           "name": "scope",
           "description": "Scope for the service worker.",
-          "type": "string",
-          "default": "\"/\""
+          "type": "string"
         }
       ],
       "properties": [
@@ -52,8 +54,7 @@
           "name": "updateAction",
           "attribute": "update-action",
           "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
-          "type": "string",
-          "default": "\"skipWaiting\""
+          "type": "string"
         },
         {
           "name": "error",
@@ -62,33 +63,44 @@
           "type": "Error"
         },
         {
+          "name": "channelName",
+          "attribute": "channel-name",
+          "description": "Channel name for communicating with the service worker.",
+          "type": "string"
+        },
+        {
+          "name": "channel"
+        },
+        {
           "name": "path",
           "attribute": "path",
           "description": "Path to the service worker script.",
-          "type": "string",
-          "default": "\"/service-worker.js\""
+          "type": "string"
         },
         {
           "name": "scope",
           "attribute": "scope",
           "description": "Scope for the service worker.",
-          "type": "string",
-          "default": "\"/\""
+          "type": "string"
         },
         {
-          "name": "worker",
+          "name": "serviceWorker",
           "description": "A reference to the service worker instance.",
           "type": "ServiceWorker"
         }
       ],
       "events": [
         {
-          "name": "service-worker-changed",
-          "description": "New value of serviceWorker"
+          "name": "change",
+          "description": "When the service worker changes"
         },
         {
-          "name": "error-changed",
-          "description": "New value of error"
+          "name": "error",
+          "description": "When an error occurs"
+        },
+        {
+          "name": "message",
+          "description": "When a message is received on the broadcast channel"
         }
       ]
     }
