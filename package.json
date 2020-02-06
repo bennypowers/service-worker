@@ -1,26 +1,33 @@
 {
   "name": "@power-elements/service-worker",
-  "flat": true,
   "version": "3.2.0",
   "license": "ISC",
   "description": "Custom Element for declaratively adding a service worker with optional auto-install.",
   "contributors": [
-    "Benny Powers <benny.p@blink.gg>"
+    "Benny Powers <web@bennypowers.com>"
   ],
   "scripts": {
-    "test": "polymer test"
+    "test": "karma start --coverage",
+    "analyze": "run-s analyze:*",
+    "analyze:json": "wca analyze service-worker.js --outFile custom-elements.json",
+    "analyze:markdown": "wca analyze service-worker.js --silent >> README.md",
+    "preanalyze:markdown": "cp docs/README.header.md README.md",
+    "postanalyze:markdown": "cat docs/README.footer.md >> README.md",
+    "prepare": "npm run analyze"
   },
   "main": "service-worker.js",
+  "module": "service-worker.js",
+  "type": "module",
   "devDependencies": {
-    "@polymer/iron-demo-helpers": "^3.0.2",
-    "@polymer/paper-button": "^3.0.1",
+    "@open-wc/testing": "^2.5.2",
+    "@open-wc/testing-karma": "^3.2.37",
     "@webcomponents/webcomponentsjs": "^2.2.7",
     "eslint": "^5.14.1",
     "eslint-config-google": "^0.12.0",
     "eslint-plugin-html": "^5.0.3",
     "eslint-plugin-no-loops": "^0.3.0",
-    "polymer-cli": "^1.9.6",
-    "wct-browser-legacy": "^1.0.2",
-    "web-component-tester": "^6.9.2"
+    "lit-html": "^1.1.2",
+    "npm-run-all": "^4.1.5",
+    "web-component-analyzer": "^1.0.2"
   }
 }

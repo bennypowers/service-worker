@@ -1,42 +1,10 @@
-[![Published on npm](https://img.shields.io/npm/v/@power-elements/service-worker)](https://npm.im/@power-elements/service-worker)
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/service-worker)
-[![Test Status](https://github.com/bennypowers/service-worker/workflows/test/badge.svg)](https://github.com/bennypowers/service-worker/actions?query=workflow%3Atest)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/test_coverage)](https://codeclimate.com/github/bennypowers/service-worker/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/maintainability)](https://codeclimate.com/github/bennypowers/service-worker/maintainability)
-[![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
-# service-worker
-
-Custom Element for declaratively adding a service worker with optional auto-update.
-
-## Example
-
-```html
-<service-worker id="serviceWorker"
-    path="./service-worker.js"
-    scope="/muh-data/"
-    auto-reload
-></service-worker>
-```
-
-## Properties
-
-| Property       | Attribute       | Type            | Default              | Description                                      |
-|----------------|-----------------|-----------------|----------------------|--------------------------------------------------|
-| `autoReload`   | `auto-reload`   | `boolean`       | false                | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
-| `error`        | `error`         | `Error`         | null                 | Error state of the service-worker registration   |
-| `interacted`   |                 | `boolean`       | false                |                                                  |
-| `path`         | `path`          | `string`        | "/service-worker.js" | Path to the service worker script.               |
-| `scope`        | `scope`         | `string`        | "/"                  | Scope for the service worker.                    |
-| `updateAction` | `update-action` | `string`        | "skipWaiting"        | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
-| `worker`       |                 | `ServiceWorker` | null                 | A reference to the service worker instance.      |
-
 ## Updating the Service Worker.
 
 When an updated service worker is detected, `<service-worker>` will post a message to the service worker with the contents `{ action: this.updateAction }`. You can customize the name of the passed action by setting the `updateAction` property or the `update-action` attribute (they will sync with each other). `updateAction` is by `'skipWaiting'` by default. You can then handle that message in your service worker by running `self.skipWaiting()`:
 
 ```js
-self.addEventListener('message', ({ data: { action } }) => {
-  switch (action) {
+self.addEventListener('message', event => {
+  switch (event.data.action) {
     case 'skipWaiting': return self.skipWaiting();
   }
 });
