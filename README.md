@@ -1,19 +1,50 @@
-# \<service-worker\>
-[![Build Status](https://travis-ci.org/bennypowers/service-worker.svg?branch=master)](https://travis-ci.org/bennypowers/service-worker)
+[![Published on npm](https://img.shields.io/npm/v/@power-elements/service-worker)](https://npm.im/@power-elements/service-worker)
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/service-worker)
+[![Test Status](https://github.com/bennypowers/service-worker/workflows/test/badge.svg)](https://github.com/bennypowers/service-worker/actions?query=workflow%3Atest)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/test_coverage)](https://codeclimate.com/github/bennypowers/service-worker/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/maintainability)](https://codeclimate.com/github/bennypowers/service-worker/maintainability)
 [![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
+# service-worker
 
-Custom Element for declaratively adding a service worker with "Click To Update" prompt and optional auto-install.
+Custom Element for declaratively adding a service worker with optional auto-update.
 
-## Usage
+## Example
 
 ```html
 <service-worker id="serviceWorker"
-    path="./my-service-worker.js"
+    path="./service-worker.js"
     scope="/muh-data/"
     auto-reload
 ></service-worker>
 ```
+
+## Properties
+
+| Property        | Attribute       | Type            | Default | Description                                      |
+|-----------------|-----------------|-----------------|---------|--------------------------------------------------|
+| `autoReload`    | `auto-reload`   | `boolean`       | false   | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
+| `channel`       |                 |                 |         |                                                  |
+| `channelName`   | `channel-name`  | `string`        |         | Channel name for communicating with the service worker. |
+| `error`         | `error`         | `Error`         | null    | Error state of the service-worker registration   |
+| `interacted`    |                 | `boolean`       | false   |                                                  |
+| `path`          | `path`          | `string`        |         | Path to the service worker script.               |
+| `scope`         | `scope`         | `string`        |         | Scope for the service worker.                    |
+| `serviceWorker` |                 | `ServiceWorker` | null    | A reference to the service worker instance.      |
+| `updateAction`  | `update-action` | `string`        |         | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
+
+## Methods
+
+| Method                  | Type                                             | Description                                      |
+|-------------------------|--------------------------------------------------|--------------------------------------------------|
+| `registerServiceWorker` | `({ path, scope }?: { path?: string; scope?: string; updateAction?: string; }): Promise<ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed<br /><br />**options.path**: Path to the sw script |
+
+## Events
+
+| Event     | Description                                      |
+|-----------|--------------------------------------------------|
+| `change`  | When the service worker changes                  |
+| `error`   | When an error occurs                             |
+| `message` | When a message is received on the broadcast channel |
 
 ## Updating the Service Worker.
 
@@ -30,17 +61,26 @@ self.addEventListener('message', event => {
 If `auto-reload` is set, `<service-worker>` will check if the user has not yet interacted with the app, and if she hasn't, refresh the page by calling `location.reload()` when the new service-worker is installed. Listen for the `service-worker-changed` event to display a message to the user when the service worker updates.
 
 ```js
-document.querySelector('service-worker')
-  .addEventListener('service-worker-changed', event => {
-    const dialog = document.createElement('dialog')
-    dialog.innerHTML = `
+const dialogTemplate = document.createElement('template');
+dialogTemplate.innerHTML = `
+  <dialog>
+    <form method="dialog">
       <h1>New Version Available!</h1>
       <p>Reload the Page?</p>
-      <button id="sw-dialog-confirm">OK</button>
-      <button id="sw-dialog-cancel">Cancel</button>
-    `;
-    dialog.querySelector('#sw-dialog-cancel').onclick = () => dialog.close();
-    dialog.querySelector('#sw-dialog-confirm').onclick = () => location.reload();
+      <menu>
+        <button value="confirm">OK</button>
+        <button value="cancel">Cancel</button>
+      </menu>
+    </form>
+  </dialog>
+`;
+document.querySelector('service-worker')
+  .addEventListener('service-worker-changed', event => {
+    const dialog = dialogTemplate.content.cloneNode(true);
+    dialog.addEventListener('close', function({ returnValue }) {
+      if (returnValue === 'confirm') location.reload();
+    });
+    document.body.append(dialog);
     dialog.showModal();
   })
 ```
@@ -62,10 +102,22 @@ const workboxSW = new WorkboxSW({
 
 #### Workbox CLI
 ```js
-// workbox-cli-config.js
+// workbox-config.js
 module.exports = {
+  // ...
   skipWaiting: true,
 };
+```
+
+#### Rollup
+```js
+// rollup.config.js
+import { generateSW } from 'rollup-plugin-workbox';
+export default {
+  // ...
+  // use workbox-config.js as above
+  plugins: [generateSW(require('./workbox-config.js'))]
+}
 ```
 
 #### Webpack

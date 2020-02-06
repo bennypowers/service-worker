@@ -22,12 +22,12 @@
       }],
     "no-var": "off",
     "require-jsdoc": "off",
-    "max-len": ["warn", {
+    "max-len": ["warn", 100, {
       "ignoreTemplateLiterals": true,
       "ignoreStrings": true,
       "ignoreComments": true,
       "ignoreUrls": true
-      }]
+    }]
   },
   "overrides": [{
       "files": [ "demo/*.*" ],

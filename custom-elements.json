@@ -1,0 +1,108 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "service-worker",
+      "description": "Custom Element for declaratively adding a service worker with optional auto-update.",
+      "attributes": [
+        {
+          "name": "auto-reload",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "update-action",
+          "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
+          "type": "string"
+        },
+        {
+          "name": "error",
+          "description": "Error state of the service-worker registration",
+          "type": "Error"
+        },
+        {
+          "name": "channel-name",
+          "description": "Channel name for communicating with the service worker.",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "description": "Path to the service worker script.",
+          "type": "string"
+        },
+        {
+          "name": "scope",
+          "description": "Scope for the service worker.",
+          "type": "string"
+        }
+      ],
+      "properties": [
+        {
+          "name": "interacted",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "autoReload",
+          "attribute": "auto-reload",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "updateAction",
+          "attribute": "update-action",
+          "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
+          "type": "string"
+        },
+        {
+          "name": "error",
+          "attribute": "error",
+          "description": "Error state of the service-worker registration",
+          "type": "Error"
+        },
+        {
+          "name": "channelName",
+          "attribute": "channel-name",
+          "description": "Channel name for communicating with the service worker.",
+          "type": "string"
+        },
+        {
+          "name": "channel"
+        },
+        {
+          "name": "path",
+          "attribute": "path",
+          "description": "Path to the service worker script.",
+          "type": "string"
+        },
+        {
+          "name": "scope",
+          "attribute": "scope",
+          "description": "Scope for the service worker.",
+          "type": "string"
+        },
+        {
+          "name": "serviceWorker",
+          "description": "A reference to the service worker instance.",
+          "type": "ServiceWorker"
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "description": "When the service worker changes"
+        },
+        {
+          "name": "error",
+          "description": "When an error occurs"
+        },
+        {
+          "name": "message",
+          "description": "When a message is received on the broadcast channel"
+        }
+      ]
+    }
+  ]
+}

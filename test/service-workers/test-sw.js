@@ -1,0 +1,2 @@
+/* eslint-env serviceworker */
+skipWaiting();
