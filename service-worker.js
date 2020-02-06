@@ -42,6 +42,25 @@ if ('serviceWorker' in navigator) {
       else this.removeAttribute('auto-reload');
     }
 
+    /**
+     * Error state of the service-worker registration
+     * @type {Error}
+     * @attr error - the error message
+     */
+    get error() {
+      return this.__error;
+    }
+
+    set error(value) {
+      if (value) {
+        if (value instanceof Error)
+          this.setAttribute('error', value.message);
+        else
+          throw new Error('error must be an instance of Error');
+      } else
+        this.removeAttribute('error');
+
+      this.__error = value;
     }
 
     /**
@@ -117,10 +136,6 @@ if ('serviceWorker' in navigator) {
 
       this.updateAction = 'skipWaiting';
 
-      /**
-       * Error state of the service-worker registration
-       * @type {Error|null}
-       */
       this.error = null;
 
       this.path = '/service-worker.js';
