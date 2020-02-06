@@ -58,12 +58,13 @@ if ('serviceWorker' in navigator) {
 
       it('must be an error', async function() {
         const element = await fixture(`<service-worker></service-worker>`);
+        const initial = element.error;
         try {
           element.error = 'hah';
           expect.fail('was able to set a non-Error error value');
         } catch (e) {
           expect(e.message).to.equal('error must be an instance of Error');
-          expect(element.error).to.not.be.ok;
+          expect(element.error).to.equal(initial);
         }
       });
     });
