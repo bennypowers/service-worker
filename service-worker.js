@@ -197,20 +197,7 @@ if ('serviceWorker' in navigator) {
      * @private
      */
     fire(type, opts) {
-      return this.dispatchEvent(
-          new CustomEvent(type, {
-            bubbles: true,
-            composed: true,
-            ...opts,
-          })
-      );
-    }
-
-    /** @private */
-    onInteraction() {
-      this.interacted = true;
-      document.removeEventListener('click', this.onInteraction);
-      document.removeEventListener('keyup', this.onInteraction);
+      return this.dispatchEvent(new CustomEvent(type, {...opts}));
     }
 
     /**
