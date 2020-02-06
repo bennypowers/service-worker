@@ -13,7 +13,8 @@ if ('serviceWorker' in navigator) {
    * ```
    *
    * @element service-worker
-   *
+   * @fires 'service-worker-changed' - New value of serviceWorker
+   * @fires 'error-changed' - New value of error
    */
   class ServiceWorker extends HTMLElement {
     static get is() {return 'service-worker';}
