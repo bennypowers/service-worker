@@ -33,13 +33,15 @@ if ('serviceWorker' in navigator) {
      * @attr auto-reload
      */
     get autoReload() {
-      return this.__autoReload;
+      return !!this.__autoReload;
     }
 
     set autoReload(value) {
-      this.__autoReload = value;
-      if (!value) this.removeAttribute('auto-reload');
-      if (value && !this.hasAttribute('auto-reload')) this.setAttribute('auto-reload', '')
+      this.__autoReload = !!value;
+      if (value) this.setAttribute('auto-reload', '');
+      else this.removeAttribute('auto-reload');
+    }
+
     }
 
     /**
@@ -93,10 +95,26 @@ if ('serviceWorker' in navigator) {
       }
     }
 
+    /**
+     * @private
+     * @return {boolean}
+     */
+    get shouldRegister() {
+      return (
+        !this.registrationInProgress &&
+        this.scope != null &&
+        !!this.path &&
+        !!this.updateAction
+      );
+    }
+
     constructor() {
       super();
 
+      this.interacted = false;
+
       this.autoReload = false;
+
       this.updateAction = 'skipWaiting';
 
       /**
@@ -105,39 +123,54 @@ if ('serviceWorker' in navigator) {
        */
       this.error = null;
 
-      /** A reference to the service worker instance. */
+      this.path = '/service-worker.js';
+
+      this.scope = '/';
+
+      /**
+       * A reference to the service worker instance.
+       * @type {ServiceWorker}
+       */
       this.worker = null;
 
-      /** @private */
-      this.onError = this.onError.bind(this);
-      /** @private */
-      this.onInteraction = this.onInteraction.bind(this);
-      /** @private */
-      this.onRegistration = this.onRegistration.bind(this);
-      /** @private */
-      this.track = this.track.bind(this);
-      /** @private */
-      this.update = this.update.bind(this);
+      const onInteraction = () => this.interacted = true;
 
       // Check whether the user has interacted with the page yet.
-      document.addEventListener('click', this.onInteraction);
-      document.addEventListener('keyup', this.onInteraction);
+      document.addEventListener('click', onInteraction, {once: true});
+      document.addEventListener('keyup', onInteraction, {once: true});
     }
 
     connectedCallback() {
       this.style.display = 'none';
-      if (!this.scope) this.scope = '/';
-      if (!this.path) this.path = '/service-worker.js';
-
       this.registerServiceWorker();
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
+      if (oldVal === newVal) return;
       switch (name) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
         case 'update-action': this.updateAction = newVal; break;
-        case 'auto-reload': this.autoReload = newVal || newVal === ""; break;
+        case 'auto-reload': this.autoReload = !!newVal || newVal === ''; break;
+      }
+    }
+
+    /**
+     * Registers a service worker, and prompts to update as needed
+     * @param  {Object} options Initialization options
+     * @param  {String}  [options.path=this.path]              Path to the sw script
+     * @param  {String}  [options.scope=this.scope]            Scope of the sw
+     * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
+     * @return {Promise<ServiceWorkerRegistration>}
+     */
+    async registerServiceWorker({path = this.path, scope = this.scope} = {}) {
+      if (!this.shouldRegister) return;
+      this.registrationInProgress = true;
+      try {
+        const reg = await navigator.serviceWorker.register(path, {scope});
+        return this.onRegistration(reg);
+      } catch (error) {
+        this.onError(error);
       }
     }
 
@@ -172,8 +205,8 @@ if ('serviceWorker' in navigator) {
      * @private
      */
     onError(error) {
-      this.registrationInProgress = false;
       this.error = error;
+      this.registrationInProgress = false;
       this.fire('error-changed', {error});
       return error;
     }
@@ -203,40 +236,6 @@ if ('serviceWorker' in navigator) {
         this.track(reg.installing);
 
       return reg;
-    }
-
-    /**
-     * @private
-     * @return {boolean}
-     */
-    shouldRegister() {
-      return (
-        !this.registrationInProgress &&
-        this.scope != null &&
-        !!this.path &&
-        !!this.updateAction
-      );
-    }
-
-    /**
-     * Registers a service worker, and prompts to update as needed
-     * @param  {Object} options Initialization options
-     * @param  {String}  [options.path=this.path]              Path to the sw script
-     * @param  {String}  [options.scope=this.scope]            Scope of the sw
-     * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
-     * @return {Promise<ServiceWorkerRegistration>}
-     * @private
-     */
-    async registerServiceWorker({
-      path = this.path,
-      scope = this.scope,
-      updateAction = this.updateAction,
-    } = {}) {
-      if (!this.shouldRegister()) return;
-      this.registrationInProgress = true;
-      return navigator.serviceWorker.register(path, {scope})
-        .then(this.onRegistration)
-        .catch(this.onError);
     }
 
     /**
