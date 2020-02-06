@@ -80,6 +80,16 @@
           "description": "A reference to the service worker instance.",
           "type": "ServiceWorker"
         }
+      ],
+      "events": [
+        {
+          "name": "service-worker-changed",
+          "description": "New value of serviceWorker"
+        },
+        {
+          "name": "error-changed",
+          "description": "New value of error"
+        }
       ]
     }
   ]

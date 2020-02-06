@@ -30,13 +30,26 @@ Custom Element for declaratively adding a service worker with optional auto-upda
 | `updateAction` | `update-action` | `string`        | "skipWaiting"        | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
 | `worker`       |                 | `ServiceWorker` | null                 | A reference to the service worker instance.      |
 
+## Methods
+
+| Method                  | Type                                             | Description                                      |
+|-------------------------|--------------------------------------------------|--------------------------------------------------|
+| `registerServiceWorker` | `({ path, scope }?: { path?: string; scope?: string; updateAction?: string; }): Promise<ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed<br /><br />**options.path**: Path to the sw script |
+
+## Events
+
+| Event                    | Description                |
+|--------------------------|----------------------------|
+| `error-changed`          | New value of error         |
+| `service-worker-changed` | New value of serviceWorker |
+
 ## Updating the Service Worker.
 
 When an updated service worker is detected, `<service-worker>` will post a message to the service worker with the contents `{ action: this.updateAction }`. You can customize the name of the passed action by setting the `updateAction` property or the `update-action` attribute (they will sync with each other). `updateAction` is by `'skipWaiting'` by default. You can then handle that message in your service worker by running `self.skipWaiting()`:
 
 ```js
-self.addEventListener('message', ({ data: { action } }) => {
-  switch (action) {
+self.addEventListener('message', event => {
+  switch (event.data.action) {
     case 'skipWaiting': return self.skipWaiting();
   }
 });
