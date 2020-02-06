@@ -11,6 +11,7 @@
     "analyze": "run-s analyze:*",
     "analyze:json": "wca analyze service-worker.js --outFile custom-elements.json",
     "analyze:markdown": "wca analyze service-worker.js --silent >> README.md",
+    "analyze:types": "tsc",
     "preanalyze:markdown": "cp docs/README.header.md README.md",
     "postanalyze:markdown": "cat docs/README.footer.md >> README.md",
     "prepare": "npm run analyze"

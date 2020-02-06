@@ -20,17 +20,18 @@ Custom Element for declaratively adding a service worker with optional auto-upda
 
 ## Properties
 
-| Property        | Attribute       | Type            | Default | Description                                      |
-|-----------------|-----------------|-----------------|---------|--------------------------------------------------|
-| `autoReload`    | `auto-reload`   | `boolean`       | false   | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
-| `channel`       |                 |                 |         |                                                  |
-| `channelName`   | `channel-name`  | `string`        |         | Channel name for communicating with the service worker. |
-| `error`         | `error`         | `Error`         | null    | Error state of the service-worker registration   |
-| `interacted`    |                 | `boolean`       | false   |                                                  |
-| `path`          | `path`          | `string`        |         | Path to the service worker script.               |
-| `scope`         | `scope`         | `string`        |         | Scope for the service worker.                    |
-| `serviceWorker` |                 | `ServiceWorker` | null    | A reference to the service worker instance.      |
-| `updateAction`  | `update-action` | `string`        |         | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
+| Property        | Attribute       | Type               | Default | Description                                      |
+|-----------------|-----------------|--------------------|---------|--------------------------------------------------|
+| `autoReload`    | `auto-reload`   | `boolean`          | false   | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
+| `channel`       |                 | `BroadcastChannel` |         | BroadcastChannel for communicating with the service worker |
+| `channelName`   | `channel-name`  | `string`           |         | Channel name for communicating with the service worker. |
+| `error`         | `error`         | `Error`            | null    | Error state of the service-worker registration   |
+| `installed`     |                 | `boolean`          | false   | True when the service worker is installed        |
+| `interacted`    |                 | `boolean`          | false   | True when the page has been interacted with      |
+| `path`          | `path`          | `string`           |         | Path to the service worker script.               |
+| `scope`         | `scope`         | `string`           |         | Scope for the service worker.                    |
+| `serviceWorker` |                 | `ServiceWorker`    | null    | A reference to the service worker instance.      |
+| `updateAction`  | `update-action` | `string`           |         | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
 
 ## Methods
 

@@ -39,7 +39,14 @@
       ],
       "properties": [
         {
+          "name": "installed",
+          "description": "True when the service worker is installed",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "interacted",
+          "description": "True when the page has been interacted with",
           "type": "boolean",
           "default": "false"
         },
@@ -69,7 +76,9 @@
           "type": "string"
         },
         {
-          "name": "channel"
+          "name": "channel",
+          "description": "BroadcastChannel for communicating with the service worker",
+          "type": "BroadcastChannel"
         },
         {
           "name": "path",

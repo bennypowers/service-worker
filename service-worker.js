@@ -1,6 +1,4 @@
-/* istanbul ignore else */
-if ('serviceWorker' in navigator) {
-  /**
+/**
    * Custom Element for declaratively adding a service worker with optional auto-update.
    *
    * @example
@@ -17,184 +15,196 @@ if ('serviceWorker' in navigator) {
    * @fires 'error' - When an error occurs
    * @fires 'message' - When a message is received on the broadcast channel
    */
-  class ServiceWorker extends HTMLElement {
-    static get is() {return 'service-worker';}
+class ServiceWorkerElement extends HTMLElement {
+  static get is() {return 'service-worker';}
 
-    static get observedAttributes() {
-      return [
-        'auto-reload',
-        'channel-name',
-        'path',
-        'scope',
-        'update-action',
-      ];
-    }
+  static get observedAttributes() {
+    return [
+      'auto-reload',
+      'channel-name',
+      'path',
+      'scope',
+      'update-action',
+    ];
+  }
 
-    /**
+  /**
      * If true, when updates are found, the page will automatically
      * reload, so long as the user has not yet interacted with it.
      * @attr auto-reload
      */
-    get autoReload() {
-      return !!this.__autoReload;
-    }
+  get autoReload() {
+    return !!this.__autoReload;
+  }
 
-    set autoReload(value) {
-      this.__autoReload = !!value;
-      if (value) this.setAttribute('auto-reload', '');
-      else this.removeAttribute('auto-reload');
-    }
+  set autoReload(value) {
+    this.__autoReload = !!value;
+    if (value) this.setAttribute('auto-reload', '');
+    else this.removeAttribute('auto-reload');
+  }
 
-    /**
+  /**
      * Error state of the service-worker registration
      * @type {Error}
      * @attr error - the error message
      */
-    get error() {
-      return this.__error;
-    }
+  get error() {
+    return this.__error;
+  }
 
-    set error(value) {
-      if (value) {
-        if (value instanceof Error)
-          this.setAttribute('error', value.message);
-        else
-          throw new Error('error must be an instance of Error');
-      } else
-        this.removeAttribute('error');
+  set error(value) {
+    if (value) {
+      if (value instanceof Error)
+        this.setAttribute('error', value.message);
+      else
+        throw new Error('error must be an instance of Error');
+    } else
+      this.removeAttribute('error');
 
-      this.__error = value;
-    }
+    this.__error = value;
+  }
 
-    /**
+  /**
      * Channel name for communicating with the service worker.
      * @type {string}
      * @attr channel-name
      */
-    get channelName() {
-      return this.__channelName;
-    }
+  get channelName() {
+    return this.__channelName;
+  }
 
-    set channelName(channelName) {
-      this.__channelName = channelName;
-      if (channelName != null) this.setAttribute('channel-name', channelName);
-      else this.removeAttribute('channel-name');
-      this.registerServiceWorker({channelName});
-    }
+  set channelName(channelName) {
+    this.__channelName = channelName;
+    if (channelName != null) this.setAttribute('channel-name', channelName);
+    else this.removeAttribute('channel-name');
+  }
 
-    /**
+  /**
      * Path to the service worker script.
      * @type {string}
      * @attr path
      */
-    get path() {
-      return this.__path;
-    }
+  get path() {
+    return this.__path;
+  }
 
-    set path(path) {
-      this.__path = path;
-      if (path != null) this.setAttribute('path', path);
-      else this.removeAttribute('path');
-      this.registerServiceWorker({path});
-    }
+  set path(path) {
+    this.__path = path;
+    if (path != null) this.setAttribute('path', path);
+    else this.removeAttribute('path');
+    this.registerServiceWorker({path});
+  }
 
-    /**
+  /**
      * Scope for the service worker.
      * @type {string}
      * @attr scope
      */
-    get scope() {
-      return this.__scope;
-    }
+  get scope() {
+    return this.__scope;
+  }
 
-    set scope(scope) {
-      this.__scope = scope;
-      if (scope != null) this.setAttribute('scope', scope);
-      else this.removeAttribute('scope');
-      this.registerServiceWorker({scope});
-    }
+  set scope(scope) {
+    this.__scope = scope;
+    if (scope != null) this.setAttribute('scope', scope);
+    else this.removeAttribute('scope');
+    this.registerServiceWorker({scope});
+  }
 
-    /**
+  /**
      * String passed to serviceWorker which triggers self.skipWaiting().
      * String will be passed in message.action.
      * @attr update-action
      * @type {string}
      */
-    get updateAction() {
-      return this.__updateAction;
-    }
+  get updateAction() {
+    return this.__updateAction;
+  }
 
-    set updateAction(updateAction) {
-      this.__updateAction = updateAction;
-      if (updateAction != null) this.setAttribute('update-action', updateAction);
-      else this.removeAttribute('update-action');
-    }
+  set updateAction(updateAction) {
+    this.__updateAction = updateAction;
+    if (updateAction != null) this.setAttribute('update-action', updateAction);
+    else this.removeAttribute('update-action');
+  }
 
-    /**
+  /**
      * @private
      * @return {boolean}
      */
-    get shouldRegister() {
-      return (
-        this.isConnected &&
+  get shouldRegister() {
+    return (
+      this.isConnected &&
         !this.registrationInProgress &&
         this.scope != null &&
         !!this.path &&
         !!this.updateAction
-      );
-    }
+    );
+  }
 
-    constructor() {
-      super();
+  constructor() {
+    super();
 
-      this.interacted = false;
+    /** True when the service worker is installed */
+    this.installed = false;
 
-      this.autoReload = false;
+    /** True when the page has been interacted with */
+    this.interacted = false;
 
-      this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
+    this.autoReload = false;
 
-      this.error = null;
+    this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
 
-      this.channelName = this.getAttribute('channel-name') || 'service-worker';
+    this.error = null;
 
-      this.channel = new BroadcastChannel(this.channelName);
+    this.channelName = this.getAttribute('channel-name') || 'service-worker';
 
-      this.channel.addEventListener('message', (event) => this.fire('message', {detail: event}));
+    /**
+       * BroadcastChannel for communicating with the service worker
+       * @type {BroadcastChannel}
+       */
+    this.channel = new BroadcastChannel(this.channelName);
 
-      this.path = this.getAttribute('path') || '/service-worker.js';
+    this.channel.addEventListener('message', (event) => this.fire('message', {detail: event}));
 
-      this.scope = this.getAttribute('scope') || '/';
+    this.path = this.getAttribute('path') || '/service-worker.js';
 
-      /**
+    this.scope = this.getAttribute('scope') || '/';
+
+    /**
        * A reference to the service worker instance.
        * @type {ServiceWorker}
        */
-      this.serviceWorker = null;
+    this.serviceWorker = null;
 
-      const onInteraction = () => this.interacted = true;
+    const onInteraction = () => this.interacted = true;
 
-      // Check whether the user has interacted with the page yet.
-      document.addEventListener('click', onInteraction, {once: true});
-      document.addEventListener('keyup', onInteraction, {once: true});
+    // Check whether the user has interacted with the page yet.
+    document.addEventListener('click', onInteraction, {once: true});
+    document.addEventListener('keyup', onInteraction, {once: true});
+  }
+
+  connectedCallback() {
+    this.style.display = 'none';
+    this.registerServiceWorker();
+  }
+
+  /**
+       * @param {string} name
+       * @param {string} oldVal
+       * @param {string} newVal
+       */
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (oldVal === newVal) return;
+    switch (name) {
+      case 'path': this.path = newVal; break;
+      case 'scope': this.scope = newVal; break;
+      case 'channel-name': this.channelName = newVal; break;
+      case 'update-action': this.updateAction = newVal; break;
+      case 'auto-reload': this.autoReload = !!newVal || newVal === ''; break;
     }
+  }
 
-    connectedCallback() {
-      this.style.display = 'none';
-      this.registerServiceWorker();
-    }
-
-    attributeChangedCallback(name, oldVal, newVal) {
-      if (oldVal === newVal) return;
-      switch (name) {
-        case 'path': this.path = newVal; break;
-        case 'scope': this.scope = newVal; break;
-        case 'channel-name': this.channelName = newVal; break;
-        case 'update-action': this.updateAction = newVal; break;
-        case 'auto-reload': this.autoReload = !!newVal || newVal === ''; break;
-      }
-    }
-
-    /**
+  /**
      * Registers a service worker, and prompts to update as needed
      * @param  {Object} options Initialization options
      * @param  {String}  [options.path=this.path]              Path to the sw script
@@ -202,101 +212,102 @@ if ('serviceWorker' in navigator) {
      * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
      * @return {Promise<ServiceWorkerRegistration>}
      */
-    async registerServiceWorker({path = this.path, scope = this.scope} = {}) {
-      if (!this.shouldRegister) return;
-      this.registrationInProgress = true;
-      try {
-        const registration = await navigator.serviceWorker.register(path, {scope});
-        return this.onRegistration(registration);
-      } catch (error) {
-        this.onError(error);
-      }
+  async registerServiceWorker({path = this.path, scope = this.scope} = {}) {
+    if (!('serviceWorker' in navigator)) return;
+    if (!this.shouldRegister) return;
+    this.registrationInProgress = true;
+    try {
+      const registration = await navigator.serviceWorker.register(path, {scope});
+      return this.onRegistration(registration);
+    } catch (error) {
+      this.onError(error);
     }
+  }
 
-    /**
+  /**
      * Fire an event
      * @param  {string} type
-     * @param  {EventInit|ErrorEventInit} opts
+     * @param  {CustomEventInit|ErrorEventInit} opts
      * @return {boolean}
      * @private
      */
-    fire(type, opts) {
-      const event = type === 'error' ? new ErrorEvent(type, opts) : new CustomEvent(type, opts);
-      return this.dispatchEvent(event);
-    }
+  fire(type, opts) {
+    const event = type === 'error' ? new ErrorEvent(type, opts) : new CustomEvent(type, opts);
+    return this.dispatchEvent(event);
+  }
 
-    /**
+  /**
      * Sets the error property
      * @param  {Error} error
      * @return {Error}
      * @private
      */
-    onError(error) {
-      this.error = error;
-      this.registrationInProgress = false;
-      this.fire('error', {error});
-      return error;
-    }
+  onError(error) {
+    this.error = error;
+    this.registrationInProgress = false;
+    this.fire('error', {error});
+    return error;
+  }
 
-    /**
+  /**
      * @param  {ServiceWorkerRegistration} reg
-     * @return {ServiceWorkerRegistration|'Page fresh'}
+     * @return {ServiceWorkerRegistration}
      * @private
      */
-    onRegistration(reg) {
-      this.registrationInProgress = false;
-      this.fresh = !navigator.serviceWorker.controller;
+  onRegistration(reg) {
+    this.registrationInProgress = false;
+    this.fresh = !navigator.serviceWorker.controller;
 
-      if (reg.active) this.update(reg.active);
+    if (reg.active) this.update(reg.active);
 
-      // A new SW is already waiting to activate. Update. 👯
-      else if (reg.waiting) return this.update(reg.waiting);
+    // A new SW is already waiting to activate. Update. 👯
+    else if (reg.waiting) this.update(reg.waiting);
 
-      // A new SW is installing.
-      // Listen for updates, then notify when installed. 🍻
-      else if (reg.installing) return this.track(reg.installing);
+    // A new SW is installing.
+    // Listen for updates, then notify when installed. 🍻
+    else if (reg.installing) this.track(reg.installing);
 
-      // Otherwise, when a new service worker arrives, listen for updates,
-      // and if it becomes installed, notify the user. 🍷
-      else reg.onupdatefound = () => this.track(reg.installing);
+    // Otherwise, when a new service worker arrives, listen for updates,
+    // and if it becomes installed, notify the user. 🍷
+    else reg.onupdatefound = () => this.track(reg.installing);
 
-      return reg;
-    }
+    return reg;
+  }
 
-    /**
+  /**
      * Listen for changes on a new worker, notify when installed. 🍞
      * @param  {ServiceWorker} serviceWorker
      * @return {ServiceWorker}
      * @private
      */
-    track(serviceWorker) {
-      serviceWorker.onstatechange = () =>
+  track(serviceWorker) {
+    serviceWorker.onstatechange = () =>
         serviceWorker.state !== 'installed' ? undefined
           : this.update(serviceWorker);
-      return serviceWorker;
-    }
+    return serviceWorker;
+  }
 
-    /**
+  /**
        * When an update is found, if user has not yet interacted with the page,
        * reload it for them, otherwise, prompt them to reload 🍩.
        * @param  {ServiceWorker} serviceWorker
        * @return {ServiceWorker}
        * @private
        */
-    update(serviceWorker) {
-      this.serviceWorker = serviceWorker;
-      this.fire('change', {detail: {value: serviceWorker}});
-      const {autoReload, installed, interacted, fresh, updateAction: action} = this;
-      if (installed) serviceWorker.postMessage({action});
-      if (!fresh && !interacted && autoReload && installed) this.refresh();
-      return serviceWorker;
-    }
-
-    /** @private */
-    refresh() {
-      window.location.reload();
-    }
+  update(serviceWorker) {
+    this.serviceWorker = serviceWorker;
+    this.installed = serviceWorker.state === 'installed';
+    this.fire('change', {detail: {value: serviceWorker}});
+    const {autoReload, installed, interacted, fresh, updateAction: action} = this;
+    if (installed) serviceWorker.postMessage({action});
+    if (!fresh && !interacted && autoReload && installed) this.refresh();
+    return serviceWorker;
   }
 
-  customElements.define(ServiceWorker.is, ServiceWorker);
+  /** @private */
+  refresh() {
+    window.location.reload();
+  }
 }
+
+customElements.define(ServiceWorkerElement.is, ServiceWorkerElement);

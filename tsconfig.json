@@ -1,0 +1,11 @@
+{
+  "files": [ "service-worker.js" ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "typeRoots": []
+  }
+}
