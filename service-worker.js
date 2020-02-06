@@ -13,8 +13,8 @@ if ('serviceWorker' in navigator) {
    * ```
    *
    * @element service-worker
-   * @fires 'service-worker-changed' - New value of serviceWorker
-   * @fires 'error-changed' - New value of error
+   * @fires 'change' - When the service worker changes
+   * @fires 'error' - When an error occurs
    */
   class ServiceWorker extends HTMLElement {
     static get is() {return 'service-worker';}
@@ -75,9 +75,9 @@ if ('serviceWorker' in navigator) {
 
     set path(path) {
       this.__path = path;
-      this.registerServiceWorker({path});
       if (path != null) this.setAttribute('path', path);
-      else this.removeAtttribute('path');
+      else this.removeAttribute('path');
+      this.registerServiceWorker({path});
     }
 
     /**
@@ -91,9 +91,9 @@ if ('serviceWorker' in navigator) {
 
     set scope(scope) {
       this.__scope = scope;
-      this.registerServiceWorker({scope});
       if (scope != null) this.setAttribute('scope', scope);
-      else this.removeAtttribute('scope');
+      else this.removeAttribute('scope');
+      this.registerServiceWorker({scope});
     }
 
     /**
@@ -109,7 +109,7 @@ if ('serviceWorker' in navigator) {
     set updateAction(updateAction) {
       this.__updateAction = updateAction;
       if (updateAction != null) this.setAttribute('update-action', updateAction);
-      else this.removeAtttribute('update-action');
+      else this.removeAttribute('update-action');
     }
 
     /**
@@ -118,6 +118,7 @@ if ('serviceWorker' in navigator) {
      */
     get shouldRegister() {
       return (
+        this.isConnected &&
         !this.registrationInProgress &&
         this.scope != null &&
         !!this.path &&
@@ -132,19 +133,21 @@ if ('serviceWorker' in navigator) {
 
       this.autoReload = false;
 
-      this.updateAction = 'skipWaiting';
+      this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
 
       this.error = null;
 
-      this.path = '/service-worker.js';
 
-      this.scope = '/';
+
+      this.path = this.getAttribute('path') || '/service-worker.js';
+
+      this.scope = this.getAttribute('scope') || '/';
 
       /**
        * A reference to the service worker instance.
        * @type {ServiceWorker}
        */
-      this.worker = null;
+      this.serviceWorker = null;
 
       const onInteraction = () => this.interacted = true;
 
@@ -180,8 +183,8 @@ if ('serviceWorker' in navigator) {
       if (!this.shouldRegister) return;
       this.registrationInProgress = true;
       try {
-        const reg = await navigator.serviceWorker.register(path, {scope});
-        return this.onRegistration(reg);
+        const registration = await navigator.serviceWorker.register(path, {scope});
+        return this.onRegistration(registration);
       } catch (error) {
         this.onError(error);
       }
@@ -190,12 +193,13 @@ if ('serviceWorker' in navigator) {
     /**
      * Fire an event
      * @param  {string} type
-     * @param  {EventInit} opts
+     * @param  {EventInit|ErrorEventInit} opts
      * @return {boolean}
      * @private
      */
     fire(type, opts) {
-      return this.dispatchEvent(new CustomEvent(type, {...opts}));
+      const event = type === 'error' ? new ErrorEvent(type, opts) : new CustomEvent(type, opts);
+      return this.dispatchEvent(event);
     }
 
     /**
@@ -207,7 +211,7 @@ if ('serviceWorker' in navigator) {
     onError(error) {
       this.error = error;
       this.registrationInProgress = false;
-      this.fire('error-changed', {error});
+      this.fire('error', {error});
       return error;
     }
 
@@ -218,10 +222,9 @@ if ('serviceWorker' in navigator) {
      */
     onRegistration(reg) {
       this.registrationInProgress = false;
-      if (reg.active) this.update(reg.active);
+      this.fresh = !navigator.serviceWorker.controller;
 
-      // If there's no previous SW, quit early - this page load is fresh. 🍌
-      if (!navigator.serviceWorker.controller) return 'Page fresh';
+      if (reg.active) this.update(reg.active);
 
       // A new SW is already waiting to activate. Update. 👯
       else if (reg.waiting) return this.update(reg.waiting);
@@ -258,15 +261,16 @@ if ('serviceWorker' in navigator) {
        * @private
        */
     update(serviceWorker) {
-      this.worker = serviceWorker;
-      this.installed = serviceWorker.state === 'installed';
-      const {autoReload, installed, interacted, updateAction: action} = this;
+      this.serviceWorker = serviceWorker;
+      this.fire('change', {detail: {value: serviceWorker}});
+      const {autoReload, installed, interacted, fresh, updateAction: action} = this;
       if (installed) serviceWorker.postMessage({action});
-      const detail = serviceWorker;
-      this.fire('service-worker-changed', {detail});
-
-      if (!interacted && autoReload && installed) location.reload();
+      if (!fresh && !interacted && autoReload && installed) this.refresh();
       return serviceWorker;
+    }
+
+    refresh() {
+      window.location.reload();
     }
   }
 

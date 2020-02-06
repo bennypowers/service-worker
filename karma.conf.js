@@ -6,8 +6,20 @@ const merge = require('deepmerge');
 module.exports = (config) => {
   config.set(
       merge(createDefaultConfig(config), {
-        files: [{pattern: config.grep ? config.grep : '*.test.js', type: 'module'}],
-        esm: {nodeResolve: true, coverageExclude: ['*.test.js']},
+        files: [
+          {pattern: config.grep ? config.grep : 'test/*.test.js', type: 'module'},
+          {pattern: 'test/service-workers/*', included: false},
+        ],
+        proxies: {
+          '/service-worker.js': '/base/test/service-workers/service-worker.js',
+          '/test-sw.js': '/base/test/service-workers/test-sw.js',
+          '/new-sw.js': '/base/test/service-workers/new-sw.js',
+          '/sw.js': '/base/test/service-workers/sw.js',
+        },
+        esm: {
+          nodeResolve: true,
+          coverageExclude: ['test/**/*'],
+        },
       }),
   );
   return config;
