@@ -213,7 +213,7 @@ if ('serviceWorker' in navigator) {
 
     /**
      * @param  {ServiceWorkerRegistration} reg
-     * @return {ServiceWorkerRegistration|string}
+     * @return {ServiceWorkerRegistration|'Page fresh'}
      * @private
      */
     onRegistration(reg) {
@@ -221,7 +221,7 @@ if ('serviceWorker' in navigator) {
       if (reg.active) this.update(reg.active);
 
       // If there's no previous SW, quit early - this page load is fresh. 🍌
-      if (!navigator.serviceWorker.controller) return 'Page fresh.';
+      if (!navigator.serviceWorker.controller) return 'Page fresh';
 
       // A new SW is already waiting to activate. Update. 👯
       else if (reg.waiting) return this.update(reg.waiting);
@@ -232,8 +232,7 @@ if ('serviceWorker' in navigator) {
 
       // Otherwise, when a new service worker arrives, listen for updates,
       // and if it becomes installed, notify the user. 🍷
-      else reg.onupdatefound = () =>
-        this.track(reg.installing);
+      else reg.onupdatefound = () => this.track(reg.installing);
 
       return reg;
     }
@@ -259,14 +258,14 @@ if ('serviceWorker' in navigator) {
        * @private
        */
     update(serviceWorker) {
-      const detail = serviceWorker
-      const installed = serviceWorker.state === 'installed'
-      const { interacted, autoReload, action } = this;
-
+      this.worker = serviceWorker;
+      this.installed = serviceWorker.state === 'installed';
+      const {autoReload, installed, interacted, updateAction: action} = this;
       if (installed) serviceWorker.postMessage({action});
-      if (!interacted && autoReload && installed) location.reload();
-
+      const detail = serviceWorker;
       this.fire('service-worker-changed', {detail});
+
+      if (!interacted && autoReload && installed) location.reload();
       return serviceWorker;
     }
   }
