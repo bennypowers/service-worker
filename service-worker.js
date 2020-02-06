@@ -76,9 +76,8 @@ if ('serviceWorker' in navigator) {
     set path(path) {
       this.__path = path;
       this.registerServiceWorker({path});
-      if (this.getAttribute('path') !== path) {
-        this.setAttribute('path', path);
-      }
+      if (path != null) this.setAttribute('path', path);
+      else this.removeAtttribute('path');
     }
 
     /**
@@ -93,9 +92,8 @@ if ('serviceWorker' in navigator) {
     set scope(scope) {
       this.__scope = scope;
       this.registerServiceWorker({scope});
-      if (this.getAttribute('scope') !== scope) {
-        this.setAttribute('scope', scope);
-      }
+      if (scope != null) this.setAttribute('scope', scope);
+      else this.removeAtttribute('scope');
     }
 
     /**
@@ -108,11 +106,10 @@ if ('serviceWorker' in navigator) {
       return this.__updateAction;
     }
 
-    set updateAction(action) {
-      this.__updateAction = action;
-      if (this.getAttribute('update-action') !== action) {
-        this.setAttribute('update-action', action);
-      }
+    set updateAction(updateAction) {
+      this.__updateAction = updateAction;
+      if (updateAction != null) this.setAttribute('update-action', updateAction);
+      else this.removeAtttribute('update-action');
     }
 
     /**
