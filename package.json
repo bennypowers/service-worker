@@ -18,6 +18,7 @@
   "main": "service-worker.js",
   "module": "service-worker.js",
   "type": "module",
+  "files": ["service-worker.js", "service-worker.d.ts", "custom-elements.json", "LICENSE.md"],
   "devDependencies": {
     "@open-wc/testing": "^2.5.2",
     "@open-wc/testing-karma": "^3.2.37",
