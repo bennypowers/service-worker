@@ -1,8 +1,9 @@
+/* istanbul ignore else */
 if ('serviceWorker' in navigator) {
   /**
-   * Custom Element for declaratively adding a service worker
-   * with optional auto-update.
+   * Custom Element for declaratively adding a service worker with optional auto-update.
    *
+   * @example
    * ```html
    * <service-worker id="serviceWorker"
    *     path="./service-worker.js"
@@ -11,10 +12,8 @@ if ('serviceWorker' in navigator) {
    * ></service-worker>
    * ```
    *
-   * @customElement
-   * @extends HTMLElement
+   * @element service-worker
    *
-   * @demo demo/index.html
    */
   class ServiceWorker extends HTMLElement {
     static get is() {return 'service-worker';}
@@ -31,6 +30,7 @@ if ('serviceWorker' in navigator) {
     /**
      * If true, when updates are found, the page will automatically
      * reload, so long as the user has not yet interacted with it.
+     * @attr auto-reload
      */
     get autoReload() {
       return this.__autoReload;
@@ -42,7 +42,11 @@ if ('serviceWorker' in navigator) {
       if (value && !this.hasAttribute('auto-reload')) this.setAttribute('auto-reload', '')
     }
 
-    /** Path to the service worker script. */
+    /**
+     * Path to the service worker script.
+     * @type {string}
+     * @attr path
+     */
     get path() {
       return this.__path;
     }
@@ -55,7 +59,11 @@ if ('serviceWorker' in navigator) {
       }
     }
 
-    /** Scope for the service worker. */
+    /**
+     * Scope for the service worker.
+     * @type {string}
+     * @attr scope
+     */
     get scope() {
       return this.__scope;
     }
@@ -71,6 +79,8 @@ if ('serviceWorker' in navigator) {
     /**
      * String passed to serviceWorker which triggers self.skipWaiting().
      * String will be passed in message.action.
+     * @attr update-action
+     * @type {string}
      */
     get updateAction() {
       return this.__updateAction;
@@ -98,10 +108,15 @@ if ('serviceWorker' in navigator) {
       /** A reference to the service worker instance. */
       this.worker = null;
 
+      /** @private */
       this.onError = this.onError.bind(this);
+      /** @private */
       this.onInteraction = this.onInteraction.bind(this);
+      /** @private */
       this.onRegistration = this.onRegistration.bind(this);
+      /** @private */
       this.track = this.track.bind(this);
+      /** @private */
       this.update = this.update.bind(this);
 
       // Check whether the user has interacted with the page yet.
@@ -126,6 +141,13 @@ if ('serviceWorker' in navigator) {
       }
     }
 
+    /**
+     * Fire an event
+     * @param  {string} type
+     * @param  {EventInit} opts
+     * @return {boolean}
+     * @private
+     */
     fire(type, opts) {
       return this.dispatchEvent(
           new CustomEvent(type, {
@@ -136,12 +158,19 @@ if ('serviceWorker' in navigator) {
       );
     }
 
-    onInteraction(event) {
+    /** @private */
+    onInteraction() {
       this.interacted = true;
       document.removeEventListener('click', this.onInteraction);
       document.removeEventListener('keyup', this.onInteraction);
     }
 
+    /**
+     * Sets the error property
+     * @param  {Error} error
+     * @return {Error}
+     * @private
+     */
     onError(error) {
       this.registrationInProgress = false;
       this.error = error;
@@ -149,6 +178,11 @@ if ('serviceWorker' in navigator) {
       return error;
     }
 
+    /**
+     * @param  {ServiceWorkerRegistration} reg
+     * @return {ServiceWorkerRegistration|string}
+     * @private
+     */
     onRegistration(reg) {
       this.registrationInProgress = false;
       if (reg.active) this.update(reg.active);
@@ -171,6 +205,10 @@ if ('serviceWorker' in navigator) {
       return reg;
     }
 
+    /**
+     * @private
+     * @return {boolean}
+     */
     shouldRegister() {
       return (
         !this.registrationInProgress &&
@@ -187,6 +225,7 @@ if ('serviceWorker' in navigator) {
      * @param  {String}  [options.scope=this.scope]            Scope of the sw
      * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
      * @return {Promise<ServiceWorkerRegistration>}
+     * @private
      */
     async registerServiceWorker({
       path = this.path,
@@ -204,6 +243,7 @@ if ('serviceWorker' in navigator) {
      * Listen for changes on a new worker, notify when installed. 🍞
      * @param  {ServiceWorker} serviceWorker
      * @return {ServiceWorker}
+     * @private
      */
     track(serviceWorker) {
       serviceWorker.onstatechange = () =>
@@ -217,6 +257,7 @@ if ('serviceWorker' in navigator) {
        * reload it for them, otherwise, prompt them to reload 🍩.
        * @param  {ServiceWorker} serviceWorker
        * @return {ServiceWorker}
+       * @private
        */
     update(serviceWorker) {
       const detail = serviceWorker
