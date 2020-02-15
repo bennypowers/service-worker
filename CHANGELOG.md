@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/bennypowers/service-worker/compare/v4.0.1...v4.0.2) (2020-02-15)
+
+
+### Bug Fixes
+
+* fix infinite loop ([01d3973](https://github.com/bennypowers/service-worker/commit/01d39737753c46247ee876826adb056ceba21a07))
+
 ## [4.0.1](https://github.com/bennypowers/service-worker/compare/v4.0.0...v4.0.1) (2020-02-15)
 
 
