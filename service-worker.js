@@ -22,7 +22,6 @@ if ('serviceWorker' in navigator) {
 
     static get observedAttributes() {
       return [
-        'auto-reload',
         'channel-name',
         'path',
         'scope',
@@ -36,12 +35,10 @@ if ('serviceWorker' in navigator) {
      * @attr auto-reload
      */
     get autoReload() {
-      return !!this.__autoReload;
+      return this.hasAttribute('auto-reload');
     }
 
     set autoReload(value) {
-      if (this.__autoReload === value) return;
-      this.__autoReload = !!value;
       if (value) this.setAttribute('auto-reload', '');
       else this.removeAttribute('auto-reload');
     }
@@ -154,8 +151,6 @@ if ('serviceWorker' in navigator) {
 
       this.interacted = false;
 
-      this.autoReload = false;
-
       this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
 
       this.error = null;
@@ -194,10 +189,6 @@ if ('serviceWorker' in navigator) {
         case 'scope': this.scope = newVal; break;
         case 'channel-name': this.channelName = newVal; break;
         case 'update-action': this.updateAction = newVal; break;
-        case 'auto-reload': {
-          if (!!oldVal === !!newVal) return;
-          this.autoReload = !!(newVal || newVal === ''); break;
-        }
       }
     }
 

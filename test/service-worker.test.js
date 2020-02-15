@@ -1,11 +1,11 @@
 /* eslint-env mocha */
-import {expect, fixture, oneEvent} from '@open-wc/testing';
+import { expect, fixture, oneEvent, html } from '@open-wc/testing';
 import '../service-worker.js';
 import sinon from 'sinon';
 
 async function unregisterAllServiceWorkers() {
   const registrations = await navigator.serviceWorker.getRegistrations();
-  return await Promise.all(registrations.map((r) => r.unregister()));
+  return await Promise.all(registrations.map(r => r.unregister()));
 }
 
 if ('serviceWorker' in navigator) {
@@ -87,7 +87,7 @@ if ('serviceWorker' in navigator) {
     describe('scope attribute', function() {
       const scope = '/party';
       it('sets scope property', async function() {
-        const element = await fixture(`<service-worker scope="${ scope }"></service-worker>`);
+        const element = await fixture(`<service-worker scope="${scope}"></service-worker>`);
         expect(element.scope).to.equal(scope);
       });
 
@@ -104,7 +104,7 @@ if ('serviceWorker' in navigator) {
           const stub = sinon.stub(navigator.serviceWorker, 'register');
           const element = await fixture(`<service-worker></service-worker>`);
           element.scope = '/scope';
-          expect(stub).to.have.been.calledWith(sinon.match.string, sinon.match({scope: '/scope'}));
+          expect(stub).to.have.been.calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
           stub.restore();
         });
       });
@@ -115,7 +115,7 @@ if ('serviceWorker' in navigator) {
           const element = await fixture(`<service-worker></service-worker>`);
           element.remove();
           element.scope = '/scope';
-          expect(spy).to.not.have.been.calledWith(sinon.match.string, sinon.match({scope: '/scope'}));
+          expect(spy).to.not.have.been.calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
           spy.restore();
         });
       });
@@ -123,7 +123,7 @@ if ('serviceWorker' in navigator) {
 
     describe('auto-reload attribute', function() {
       it('sets autoReload property', async function() {
-        const element = await fixture(`<service-worker auto-reload></service-worker>`);
+        const element = await fixture(html`<service-worker auto-reload></service-worker>`);
         expect(element.autoReload).to.be.true;
       });
 
@@ -158,7 +158,7 @@ if ('serviceWorker' in navigator) {
     describe('update-action attribute', function() {
       const updateAction = 'party';
       it('sets updateAction property', async function() {
-        const element = await fixture(`<service-worker update-action="${ updateAction }"></service-worker>`);
+        const element = await fixture(`<service-worker update-action="${updateAction}"></service-worker>`);
         expect(element.updateAction).to.equal(updateAction);
       });
 
@@ -174,7 +174,7 @@ if ('serviceWorker' in navigator) {
     describe('channel-name attribute', function() {
       const channelName = 'party';
       it('sets channelName property', async function() {
-        const element = await fixture(`<service-worker channel-name="${ channelName }"></service-worker>`);
+        const element = await fixture(`<service-worker channel-name="${channelName}"></service-worker>`);
         expect(element.channelName).to.equal(channelName);
       });
 
@@ -216,7 +216,7 @@ if ('serviceWorker' in navigator) {
 
       it('receives messages on the broadcast channel', async function() {
         const element = await fixture('<service-worker path="broadcast-sw.js"></service-worker>');
-        const {detail} = await oneEvent(element, 'message');
+        const { detail } = await oneEvent(element, 'message');
         expect(detail.data.action).to.equal('install');
       });
     });
