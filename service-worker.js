@@ -18,7 +18,7 @@ if ('serviceWorker' in navigator) {
    * @fires 'message' - When a message is received on the broadcast channel
    */
   class ServiceWorker extends HTMLElement {
-    static get is() {return 'service-worker';}
+    static get is() { return 'service-worker'; }
 
     static get observedAttributes() {
       return [
@@ -81,7 +81,7 @@ if ('serviceWorker' in navigator) {
       this.__channelName = channelName;
       if (channelName != null) this.setAttribute('channel-name', channelName);
       else this.removeAttribute('channel-name');
-      this.registerServiceWorker({channelName});
+      this.registerServiceWorker({ channelName });
     }
 
     /**
@@ -98,7 +98,7 @@ if ('serviceWorker' in navigator) {
       this.__path = path;
       if (path != null) this.setAttribute('path', path);
       else this.removeAttribute('path');
-      this.registerServiceWorker({path});
+      this.registerServiceWorker({ path });
     }
 
     /**
@@ -115,7 +115,7 @@ if ('serviceWorker' in navigator) {
       this.__scope = scope;
       if (scope != null) this.setAttribute('scope', scope);
       else this.removeAttribute('scope');
-      this.registerServiceWorker({scope});
+      this.registerServiceWorker({ scope });
     }
 
     /**
@@ -164,7 +164,7 @@ if ('serviceWorker' in navigator) {
 
       this.channel = new BroadcastChannel(this.channelName);
 
-      this.channel.addEventListener('message', (event) => this.fire('message', {detail: event}));
+      this.channel.addEventListener('message', event => this.fire('message', { detail: event }));
 
       this.path = this.getAttribute('path') || '/service-worker.js';
 
@@ -179,8 +179,8 @@ if ('serviceWorker' in navigator) {
       const onInteraction = () => this.interacted = true;
 
       // Check whether the user has interacted with the page yet.
-      document.addEventListener('click', onInteraction, {once: true});
-      document.addEventListener('keyup', onInteraction, {once: true});
+      document.addEventListener('click', onInteraction, { once: true });
+      document.addEventListener('keyup', onInteraction, { once: true });
     }
 
     connectedCallback() {
@@ -207,11 +207,11 @@ if ('serviceWorker' in navigator) {
      * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
      * @return {Promise<ServiceWorkerRegistration>}
      */
-    async registerServiceWorker({path = this.path, scope = this.scope} = {}) {
+    async registerServiceWorker({ path = this.path, scope = this.scope } = {}) {
       if (!this.shouldRegister) return;
       this.registrationInProgress = true;
       try {
-        const registration = await navigator.serviceWorker.register(path, {scope});
+        const registration = await navigator.serviceWorker.register(path, { scope });
         return this.onRegistration(registration);
       } catch (error) {
         this.onError(error);
@@ -239,7 +239,7 @@ if ('serviceWorker' in navigator) {
     onError(error) {
       this.error = error;
       this.registrationInProgress = false;
-      this.fire('error', {error});
+      this.fire('error', { error });
       return error;
     }
 
@@ -290,9 +290,9 @@ if ('serviceWorker' in navigator) {
        */
     update(serviceWorker) {
       this.serviceWorker = serviceWorker;
-      this.fire('change', {detail: {value: serviceWorker}});
-      const {autoReload, installed, interacted, fresh, updateAction: action} = this;
-      if (installed) serviceWorker.postMessage({action});
+      this.fire('change', { detail: { value: serviceWorker } });
+      const { autoReload, installed, interacted, fresh, updateAction: action } = this;
+      if (installed) serviceWorker.postMessage({ action });
       if (!fresh && !interacted && autoReload && installed) this.refresh();
       return serviceWorker;
     }
