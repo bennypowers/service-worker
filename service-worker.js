@@ -40,6 +40,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set autoReload(value) {
+      if (this.__autoReload === !!value) return;
       this.__autoReload = !!value;
       if (value) this.setAttribute('auto-reload', '');
       else this.removeAttribute('auto-reload');
@@ -76,6 +77,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set channelName(channelName) {
+      if (this.__channelName === channelName) return;
       this.__channelName = channelName;
       if (channelName != null) this.setAttribute('channel-name', channelName);
       else this.removeAttribute('channel-name');
@@ -92,6 +94,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set path(path) {
+      if (this.__path === path) return;
       this.__path = path;
       if (path != null) this.setAttribute('path', path);
       else this.removeAttribute('path');
@@ -108,6 +111,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set scope(scope) {
+      if (this.__scope === scope) return;
       this.__scope = scope;
       if (scope != null) this.setAttribute('scope', scope);
       else this.removeAttribute('scope');
@@ -125,6 +129,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set updateAction(updateAction) {
+      if (this.__updateAction === updateAction) return;
       this.__updateAction = updateAction;
       if (updateAction != null) this.setAttribute('update-action', updateAction);
       else this.removeAttribute('update-action');
@@ -184,7 +189,7 @@ if ('serviceWorker' in navigator) {
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
-      if (oldVal === newVal) return;
+      if (!name || oldVal === newVal) return;
       switch (name) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
