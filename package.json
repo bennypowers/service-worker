@@ -7,7 +7,7 @@
     "Benny Powers <web@bennypowers.com>"
   ],
   "scripts": {
-    "test": "karma start --coverage",
+    "test": "karma start karma.conf.cjs --coverage",
     "lint": "eslint service-worker.js",
     "analyze": "run-s analyze:*",
     "analyze:json": "wca analyze service-worker.js --outFile custom-elements.json",
