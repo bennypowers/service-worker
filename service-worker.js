@@ -189,7 +189,6 @@ if ('serviceWorker' in navigator) {
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
-      if (!name || oldVal === newVal) return;
       switch (name) {
         case 'path': this.path = newVal; break;
         case 'scope': this.scope = newVal; break;
