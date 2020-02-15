@@ -194,7 +194,10 @@ if ('serviceWorker' in navigator) {
         case 'scope': this.scope = newVal; break;
         case 'channel-name': this.channelName = newVal; break;
         case 'update-action': this.updateAction = newVal; break;
-        case 'auto-reload': this.autoReload = !!newVal || newVal === ''; break;
+        case 'auto-reload': {
+          if (!!oldVal === !!newVal) return;
+          this.autoReload = !!(newVal || newVal === ''); break;
+        }
       }
     }
 
