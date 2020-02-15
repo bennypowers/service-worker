@@ -40,7 +40,7 @@ if ('serviceWorker' in navigator) {
     }
 
     set autoReload(value) {
-      if (this.__autoReload === !!value) return;
+      if (this.__autoReload === value) return;
       this.__autoReload = !!value;
       if (value) this.setAttribute('auto-reload', '');
       else this.removeAttribute('auto-reload');
