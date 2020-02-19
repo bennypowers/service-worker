@@ -9,12 +9,13 @@
   "scripts": {
     "test": "karma start karma.conf.cjs --coverage",
     "lint": "eslint service-worker.js",
+    "build": "npm run analyze",
     "analyze": "run-s analyze:*",
     "analyze:json": "wca analyze service-worker.js --outFile custom-elements.json",
     "analyze:markdown": "wca analyze service-worker.js --silent >> README.md",
     "preanalyze:markdown": "cp docs/README.header.md README.md",
     "postanalyze:markdown": "cat docs/README.footer.md >> README.md",
-    "prepare": "npm run analyze"
+    "prepare": "npm run build"
   },
   "main": "service-worker.js",
   "module": "service-worker.js",
