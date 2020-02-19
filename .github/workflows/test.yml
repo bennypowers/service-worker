@@ -9,9 +9,15 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+
+      - uses: actions/checkout@v2
+
+      - name: Calculate GZIPed Size
+        uses: preactjs/compressed-size-action@v1
         with:
-          node-version: 12
-      - run: npm ci
-      - run: npm test
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          build-script: analyze
+          pattern: './*.js'
+
+      - name: Test
+        run: npm test
