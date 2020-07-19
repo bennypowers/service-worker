@@ -7,9 +7,22 @@
       "description": "Custom Element for declaratively adding a service worker with optional auto-update.",
       "attributes": [
         {
+          "name": "auto-reload",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "installed",
+          "description": "True when the service worker is installed.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "update-action",
           "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
-          "type": "string"
+          "type": "string",
+          "default": "\"skipWaiting\""
         },
         {
           "name": "error",
@@ -19,28 +32,34 @@
         {
           "name": "channel-name",
           "description": "Channel name for communicating with the service worker.",
-          "type": "string"
+          "type": "string",
+          "default": "\"service-worker\""
         },
         {
           "name": "path",
           "description": "Path to the service worker script.",
-          "type": "string"
+          "type": "string",
+          "default": "\"/service-worker.js\""
         },
         {
           "name": "scope",
           "description": "Scope for the service worker.",
-          "type": "string"
-        },
-        {
-          "name": "auto-reload",
-          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
-          "type": "boolean",
-          "default": "false"
+          "type": "string",
+          "default": "\"/\""
         }
       ],
       "properties": [
         {
-          "name": "interacted",
+          "name": "autoReload",
+          "attribute": "auto-reload",
+          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "installed",
+          "attribute": "installed",
+          "description": "True when the service worker is installed.",
           "type": "boolean",
           "default": "false"
         },
@@ -48,7 +67,8 @@
           "name": "updateAction",
           "attribute": "update-action",
           "description": "String passed to serviceWorker which triggers self.skipWaiting().\nString will be passed in message.action.",
-          "type": "string"
+          "type": "string",
+          "default": "\"skipWaiting\""
         },
         {
           "name": "error",
@@ -60,34 +80,27 @@
           "name": "channelName",
           "attribute": "channel-name",
           "description": "Channel name for communicating with the service worker.",
-          "type": "string"
-        },
-        {
-          "name": "channel"
+          "type": "string",
+          "default": "\"service-worker\""
         },
         {
           "name": "path",
           "attribute": "path",
           "description": "Path to the service worker script.",
-          "type": "string"
+          "type": "string",
+          "default": "\"/service-worker.js\""
         },
         {
           "name": "scope",
           "attribute": "scope",
           "description": "Scope for the service worker.",
-          "type": "string"
+          "type": "string",
+          "default": "\"/\""
         },
         {
           "name": "serviceWorker",
           "description": "A reference to the service worker instance.",
           "type": "ServiceWorker"
-        },
-        {
-          "name": "autoReload",
-          "attribute": "auto-reload",
-          "description": "If true, when updates are found, the page will automatically\nreload, so long as the user has not yet interacted with it.",
-          "type": "boolean",
-          "default": "false"
         }
       ],
       "events": [

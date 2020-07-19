@@ -1,0 +1,14 @@
+{
+  "include": ["./service-worker.js", "./test/service-worker.test.js"],
+  "exclude": ["./service-worker.d.ts"],
+  "compilerOptions": {
+    "allowJs":true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "target": "ES2017"
+  }
+}

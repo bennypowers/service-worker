@@ -1,6 +1,5 @@
-/* eslint-env mocha */
 import { expect, fixture, oneEvent, html } from '@open-wc/testing';
-import '../service-worker.js';
+import { ServiceWorkerElement } from '../service-worker.js';
 import sinon from 'sinon';
 
 async function unregisterAllServiceWorkers() {
@@ -19,29 +18,37 @@ if ('serviceWorker' in navigator) {
       expect(() => document.createElement('service-worker')).to.not.throw;
     });
 
+    it('has a static is property', async function() {
+      expect(ServiceWorkerElement.is).to.equal('service-worker');
+    });
+
     describe('defaults', function() {
       const path = '/service-worker.js';
       const scope = '/';
       const updateAction = 'skipWaiting';
       it('path', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         expect(element.path).to.equal(path);
         expect(element.path).to.equal(path);
       });
 
       it('scope', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         expect(element.scope).to.equal(scope);
         expect(element.getAttribute('scope')).to.equal(scope);
       });
 
       it('autoReload', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         expect(element.autoReload).to.be.false;
         expect(element.hasAttribute('auto-reload')).to.be.false;
       });
 
       it('updateAction', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         expect(element.updateAction).to.equal(updateAction);
         expect(element.hasAttribute('updateAction')).to.be.false;
@@ -50,11 +57,13 @@ if ('serviceWorker' in navigator) {
 
     describe('path attribute', function() {
       it('sets path property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker path="./sw.js"></service-worker>`);
         expect(element.path).to.equal('./sw.js');
       });
 
       it('reflects path property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.path = './sw.js';
         expect(element.getAttribute('path')).to.equal('./sw.js');
@@ -65,6 +74,7 @@ if ('serviceWorker' in navigator) {
       describe('when connected', function() {
         it('setting it registers service-worker', async function() {
           const stub = sinon.stub(navigator.serviceWorker, 'register');
+          /** @type {ServiceWorkerElement} */
           const element = await fixture(`<service-worker></service-worker>`);
           element.path = './sw.js';
           expect(stub).to.have.been.calledWith('./sw.js');
@@ -75,6 +85,7 @@ if ('serviceWorker' in navigator) {
       describe('when not connected', function() {
         it('setting it does not register service-worker', async function() {
           const spy = sinon.spy(navigator.serviceWorker, 'register');
+          /** @type {ServiceWorkerElement} */
           const element = await fixture(`<service-worker></service-worker>`);
           element.remove();
           element.path = './sw.js';
@@ -87,11 +98,13 @@ if ('serviceWorker' in navigator) {
     describe('scope attribute', function() {
       const scope = '/party';
       it('sets scope property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker scope="${scope}"></service-worker>`);
         expect(element.scope).to.equal(scope);
       });
 
       it('reflects scope property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.scope = scope;
         expect(element.getAttribute('scope')).to.equal(scope);
@@ -102,6 +115,7 @@ if ('serviceWorker' in navigator) {
       describe('when connected', function() {
         it('setting it registers service-worker', async function() {
           const stub = sinon.stub(navigator.serviceWorker, 'register');
+          /** @type {ServiceWorkerElement} */
           const element = await fixture(`<service-worker></service-worker>`);
           element.scope = '/scope';
           expect(stub).to.have.been.calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
@@ -112,6 +126,7 @@ if ('serviceWorker' in navigator) {
       describe('when not connected', function() {
         it('setting it does not register service-worker', async function() {
           const spy = sinon.spy(navigator.serviceWorker, 'register');
+          /** @type {ServiceWorkerElement} */
           const element = await fixture(`<service-worker></service-worker>`);
           element.remove();
           element.scope = '/scope';
@@ -123,19 +138,30 @@ if ('serviceWorker' in navigator) {
 
     describe('auto-reload attribute', function() {
       it('sets autoReload property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(html`<service-worker auto-reload></service-worker>`);
         expect(element.autoReload).to.be.true;
       });
 
       it('reflects autoReload property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.autoReload = true;
         expect(element.hasAttribute('auto-reload')).to.be.true;
+      });
+
+      it('reflects autoReload property as boolean attribute', async function() {
+        /** @type {ServiceWorkerElement} */
+        const element = await fixture(`<service-worker auto-reload></service-worker>`);
+        element.autoReload = false;
+        expect(element.autoReload).to.be.false;
+        expect(element.hasAttribute('auto-reload')).to.be.false;
       });
     });
 
     describe('error property', function() {
       it('reflects message to error attribute', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.error = new Error('boo');
         expect(element.getAttribute('error')).to.equal('boo');
@@ -143,9 +169,11 @@ if ('serviceWorker' in navigator) {
       });
 
       it('must be an error', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         const initial = element.error;
         try {
+          // @ts-expect-error
           element.error = 'hah';
           expect.fail('was able to set a non-Error error value');
         } catch (e) {
@@ -158,11 +186,13 @@ if ('serviceWorker' in navigator) {
     describe('update-action attribute', function() {
       const updateAction = 'party';
       it('sets updateAction property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker update-action="${updateAction}"></service-worker>`);
         expect(element.updateAction).to.equal(updateAction);
       });
 
       it('reflects updateAction property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.updateAction = updateAction;
         expect(element.getAttribute('update-action')).to.equal(updateAction);
@@ -174,11 +204,13 @@ if ('serviceWorker' in navigator) {
     describe('channel-name attribute', function() {
       const channelName = 'party';
       it('sets channelName property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker channel-name="${channelName}"></service-worker>`);
         expect(element.channelName).to.equal(channelName);
       });
 
       it('reflects channelName property', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         element.channelName = channelName;
         expect(element.getAttribute('channel-name')).to.equal(channelName);
@@ -189,17 +221,20 @@ if ('serviceWorker' in navigator) {
 
     describe('interacted property', function() {
       it('is false by default', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         expect(element.interacted).to.be.false;
       });
 
       it('is true after click', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         document.dispatchEvent(new Event('click'));
         expect(element.interacted).to.be.true;
       });
 
       it('is true after keyup', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture(`<service-worker></service-worker>`);
         document.dispatchEvent(new Event('keyup'));
         expect(element.interacted).to.be.true;
@@ -208,6 +243,7 @@ if ('serviceWorker' in navigator) {
 
     describe('when service worker is installed', function() {
       it('fires the change event', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture('<service-worker path="test-sw.js"></service-worker>');
         const event = await oneEvent(element, 'change');
         expect(event.detail.value).to.be.an.instanceof(ServiceWorker);
@@ -215,6 +251,7 @@ if ('serviceWorker' in navigator) {
       });
 
       it('receives messages on the broadcast channel', async function() {
+        /** @type {ServiceWorkerElement} */
         const element = await fixture('<service-worker path="broadcast-sw.js"></service-worker>');
         const { detail } = await oneEvent(element, 'message');
         expect(detail.data.action).to.equal('install');

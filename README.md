@@ -4,6 +4,8 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/test_coverage)](https://codeclimate.com/github/bennypowers/service-worker/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/512ba168f108821c0be1/maintainability)](https://codeclimate.com/github/bennypowers/service-worker/maintainability)
 [![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
+
+💕 Proudly built using [open-wc](https://open-wc.org) and [Modern Web](https://github.com/modernweb-dev/web) Tools.
 # service-worker
 
 Custom Element for declaratively adding a service worker with optional auto-update.
@@ -20,23 +22,22 @@ Custom Element for declaratively adding a service worker with optional auto-upda
 
 ## Properties
 
-| Property        | Attribute       | Type            | Default | Description                                      |
-|-----------------|-----------------|-----------------|---------|--------------------------------------------------|
-| `autoReload`    | `auto-reload`   | `boolean`       | false   | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
-| `channel`       |                 |                 |         |                                                  |
-| `channelName`   | `channel-name`  | `string`        |         | Channel name for communicating with the service worker. |
-| `error`         | `error`         | `Error`         | null    | Error state of the service-worker registration   |
-| `interacted`    |                 | `boolean`       | false   |                                                  |
-| `path`          | `path`          | `string`        |         | Path to the service worker script.               |
-| `scope`         | `scope`         | `string`        |         | Scope for the service worker.                    |
-| `serviceWorker` |                 | `ServiceWorker` | null    | A reference to the service worker instance.      |
-| `updateAction`  | `update-action` | `string`        |         | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
+| Property        | Attribute       | Type            | Default              | Description                                      |
+|-----------------|-----------------|-----------------|----------------------|--------------------------------------------------|
+| `autoReload`    | `auto-reload`   | `boolean`       | false                | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
+| `channelName`   | `channel-name`  | `string`        | "service-worker"     | Channel name for communicating with the service worker. |
+| `error`         | `error`         | `Error`         | null                 | Error state of the service-worker registration   |
+| `installed`     | `installed`     | `boolean`       | false                | True when the service worker is installed.       |
+| `path`          | `path`          | `string`        | "/service-worker.js" | Path to the service worker script.               |
+| `scope`         | `scope`         | `string`        | "/"                  | Scope for the service worker.                    |
+| `serviceWorker` |                 | `ServiceWorker` | null                 | A reference to the service worker instance.      |
+| `updateAction`  | `update-action` | `string`        | "skipWaiting"        | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
 
 ## Methods
 
 | Method                  | Type                                             | Description                                      |
 |-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `registerServiceWorker` | `({ path, scope }?: { path?: string; scope?: string; updateAction?: string; }): Promise<ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed<br /><br />**options.path**: Path to the sw script |
+| `registerServiceWorker` | `(options?: { path?: string; scope?: string; updateAction?: string; }): Promise<ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed<br /><br />**options.path**: Path to the sw script |
 
 ## Events
 

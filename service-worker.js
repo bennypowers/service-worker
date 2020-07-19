@@ -15,7 +15,7 @@
  * @fires 'error' - When an error occurs
  * @fires 'message' - When a message is received on the broadcast channel
  */
-class ServiceWorker extends HTMLElement {
+export class ServiceWorkerElement extends HTMLElement {
   static get is() { return 'service-worker'; }
 
   static get observedAttributes() {
@@ -39,6 +39,19 @@ class ServiceWorker extends HTMLElement {
   set autoReload(value) {
     if (value) this.setAttribute('auto-reload', '');
     else this.removeAttribute('auto-reload');
+  }
+
+  /**
+   * True when the service worker is installed.
+   * @attr {boolean} [installed=false]
+   */
+  get installed() {
+    return this.hasAttribute('installed');
+  }
+
+  set installed(value) {
+    if (value) this.setAttribute('installed', '');
+    else this.removeAttribute('installed');
   }
 
   /**
@@ -76,7 +89,14 @@ class ServiceWorker extends HTMLElement {
     this.__channelName = channelName;
     if (channelName != null) this.setAttribute('channel-name', channelName);
     else this.removeAttribute('channel-name');
-    this.registerServiceWorker({ channelName });
+
+    if (this.channel)
+      this.channel.removeEventListener('message', this.onMessage);
+
+    this.channel =
+      new BroadcastChannel(this.channelName);
+
+    this.channel.addEventListener('message', this.onMessage);
   }
 
   /**
@@ -147,17 +167,13 @@ class ServiceWorker extends HTMLElement {
   constructor() {
     super();
 
-    this.interacted = false;
+    this.installed = false;
 
     this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
 
     this.error = null;
 
     this.channelName = this.getAttribute('channel-name') || 'service-worker';
-
-    this.channel = new BroadcastChannel(this.channelName);
-
-    this.channel.addEventListener('message', event => this.fire('message', { detail: event }));
 
     this.path = this.getAttribute('path') || '/service-worker.js';
 
@@ -175,9 +191,11 @@ class ServiceWorker extends HTMLElement {
     document.addEventListener('click', onInteraction, { once: true });
     document.addEventListener('keyup', onInteraction, { once: true });
 
-    // HACK: https://github.com/runem/web-component-analyzer/issues/147
-    if (this.hasAttribute('auto-reload')) return;
-    this.autoReload = false;
+    /** @private */
+    this.onMessage = this.onMessage.bind(this);
+
+    /** @private */
+    this.interacted = false;
   }
 
   connectedCallback() {
@@ -202,7 +220,8 @@ class ServiceWorker extends HTMLElement {
    * @param  {String}  [options.updateAction=this.updateAction] action to trigger the sw update.
    * @return {Promise<ServiceWorkerRegistration>}
    */
-  async registerServiceWorker({ path = this.path, scope = this.scope } = {}) {
+  async registerServiceWorker(options = this) {
+    const { path = this.path, scope = this.scope } = options;
     if (!this.shouldRegister) return;
     this.registrationInProgress = true;
     try {
@@ -216,7 +235,7 @@ class ServiceWorker extends HTMLElement {
   /**
    * Fire an event
    * @param  {string} type
-   * @param  {EventInit|ErrorEventInit} opts
+   * @param  {CustomEventInit|ErrorEventInit} opts
    * @return {boolean}
    * @private
    */
@@ -239,22 +258,33 @@ class ServiceWorker extends HTMLElement {
   }
 
   /**
+   * @param {Event} event message event from the BroadcastChannel
+   * @private
+   */
+  onMessage(event) {
+    this.fire('message', { detail: event });
+  }
+
+  /**
    * @param  {ServiceWorkerRegistration} reg
-   * @return {ServiceWorkerRegistration|'Page fresh'}
+   * @return {ServiceWorkerRegistration}
    * @private
    */
   onRegistration(reg) {
     this.registrationInProgress = false;
     this.fresh = !navigator.serviceWorker.controller;
 
-    if (reg.active) this.update(reg.active);
+    if (reg.active)
+      this.update(reg.active);
 
     // A new SW is already waiting to activate. Update. 👯
-    else if (reg.waiting) return this.update(reg.waiting);
+    else if (reg.waiting)
+      this.update(reg.waiting);
 
     // A new SW is installing.
     // Listen for updates, then notify when installed. 🍻
-    else if (reg.installing) return this.track(reg.installing);
+    else if (reg.installing)
+      this.track(reg.installing);
 
     // Otherwise, when a new service worker arrives, listen for updates,
     // and if it becomes installed, notify the user. 🍷
@@ -272,7 +302,7 @@ class ServiceWorker extends HTMLElement {
   track(serviceWorker) {
     serviceWorker.onstatechange = () =>
         serviceWorker.state !== 'installed' ? undefined
-          : this.update(serviceWorker);
+      : this.update(serviceWorker);
     return serviceWorker;
   }
 
@@ -284,6 +314,8 @@ class ServiceWorker extends HTMLElement {
    * @private
    */
   update(serviceWorker) {
+    if (serviceWorker.state === 'installed')
+      this.installed = true;
     this.serviceWorker = serviceWorker;
     this.fire('change', { detail: { value: serviceWorker } });
     const { autoReload, installed, interacted, fresh, updateAction: action } = this;
@@ -300,4 +332,4 @@ class ServiceWorker extends HTMLElement {
 
 /* istanbul ignore else */
 if ('serviceWorker' in navigator)
-  customElements.define('service-worker', ServiceWorker);
+  customElements.define('service-worker', ServiceWorkerElement);
