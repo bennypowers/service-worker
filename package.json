@@ -11,7 +11,7 @@
     "test:watch": "wtr --watch",
     "lint": "eslint service-worker.js",
     "build": "run-p build:*",
-    "prebuild:tsc": "rm service-worker.d.ts",
+    "prebuild:tsc": "rm -f service-worker.d.ts",
     "build:tsc": "tsc",
     "build:analyze": "npm run analyze",
     "analyze": "run-s analyze:*",
