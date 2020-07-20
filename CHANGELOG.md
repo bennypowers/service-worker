@@ -1,3 +1,21 @@
+# [5.0.0](https://github.com/bennypowers/service-worker/compare/v4.0.4...v5.0.0) (2020-07-20)
+
+
+### Bug Fixes
+
+* declare `interacted` in module scope ([53731c8](https://github.com/bennypowers/service-worker/commit/53731c83ddb72036ff701b0a3ac527524e4ace1d))
+
+
+### Features
+
+* type declaration ([4a48913](https://github.com/bennypowers/service-worker/commit/4a489135f6c60b934978a5fa22403867699a37e0))
+
+
+### BREAKING CHANGES
+
+* changes class name to ServiceWorkerElement
+* changes script type to module
+
 ## [4.0.4](https://github.com/bennypowers/service-worker/compare/v4.0.3...v4.0.4) (2020-02-15)
 
 
