@@ -1,3 +1,5 @@
+let interacted = false;
+
 /**
  * Custom Element for declaratively adding a service worker with optional auto-update.
  *
@@ -164,17 +166,16 @@ export class ServiceWorkerElement extends HTMLElement {
     );
   }
 
+  /** Whether the user has interacted with the page since load */
+  get interacted() {
+    return interacted;
+  }
+
   constructor() {
     super();
 
     /** @private */
     this.onMessage = this.onMessage.bind(this);
-
-    /** @private */
-    this.onInteraction = this.onInteraction.bind(this);
-
-    /** @private */
-    this.interacted = false;
 
     this.installed = false;
 
@@ -271,7 +272,7 @@ export class ServiceWorkerElement extends HTMLElement {
    * @private
    */
   onInteraction() {
-    this.interacted = true;
+    interacted = true;
   }
 
   /**
