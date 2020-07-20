@@ -167,6 +167,15 @@ export class ServiceWorkerElement extends HTMLElement {
   constructor() {
     super();
 
+    /** @private */
+    this.onMessage = this.onMessage.bind(this);
+
+    /** @private */
+    this.onInteraction = this.onInteraction.bind(this);
+
+    /** @private */
+    this.interacted = false;
+
     this.installed = false;
 
     this.updateAction = this.getAttribute('update-action') || 'skipWaiting';
@@ -180,22 +189,14 @@ export class ServiceWorkerElement extends HTMLElement {
     this.scope = this.getAttribute('scope') || '/';
 
     /**
-       * A reference to the service worker instance.
-       * @type {ServiceWorker}
-       */
+     * A reference to the service worker instance.
+     * @type {ServiceWorker}
+     */
     this.serviceWorker = null;
 
-    const onInteraction = () => this.interacted = true;
-
     // Check whether the user has interacted with the page yet.
-    document.addEventListener('click', onInteraction, { once: true });
-    document.addEventListener('keyup', onInteraction, { once: true });
-
-    /** @private */
-    this.onMessage = this.onMessage.bind(this);
-
-    /** @private */
-    this.interacted = false;
+    document.addEventListener('click', this.onInteraction, { once: true });
+    document.addEventListener('keyup', this.onInteraction, { once: true });
   }
 
   connectedCallback() {
@@ -263,6 +264,14 @@ export class ServiceWorkerElement extends HTMLElement {
    */
   onMessage(event) {
     this.fire('message', { detail: event });
+  }
+
+  /**
+   * Sets the `interacted` boolean
+   * @private
+   */
+  onInteraction() {
+    this.interacted = true;
   }
 
   /**
