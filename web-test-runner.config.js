@@ -1,5 +1,5 @@
 const SW_SCRIPTS = [
-  // '/service-worker.js',
+  '/service-worker.js',
   '/test-sw.js',
   '/new-sw.js',
   '/broadcast-sw.js',

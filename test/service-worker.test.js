@@ -118,7 +118,11 @@ if ('serviceWorker' in navigator) {
           /** @type {ServiceWorkerElement} */
           const element = await fixture(`<service-worker></service-worker>`);
           element.scope = '/scope';
-          expect(stub).to.have.been.calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
+          expect(stub)
+            .to
+            .have
+            .been
+            .calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
           stub.restore();
         });
       });
@@ -130,7 +134,12 @@ if ('serviceWorker' in navigator) {
           const element = await fixture(`<service-worker></service-worker>`);
           element.remove();
           element.scope = '/scope';
-          expect(spy).to.not.have.been.calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
+          expect(spy)
+            .to
+            .not
+            .have
+            .been
+            .calledWith(sinon.match.string, sinon.match({ scope: '/scope' }));
           spy.restore();
         });
       });

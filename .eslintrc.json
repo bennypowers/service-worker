@@ -1,9 +1,21 @@
 {
-  "extends": ["@pwrs"],
-  "overrides": [{
-    "files": ["test/*.test.js"],
-    "env": {
-      "mocha": true
+  "extends": [
+    "@pwrs"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "test/*.test.js"
+      ],
+      "env": {
+        "mocha": true
+      },
+      "files": [
+        "test/service-workers/*.js"
+      ],
+      "env": {
+        "serviceworker": true
+      }
     }
-  }]
+  ]
 }
