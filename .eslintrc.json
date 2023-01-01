@@ -1,9 +1,26 @@
 {
-  "extends": ["@pwrs"],
-  "overrides": [{
-    "files": ["test/*.test.js"],
-    "env": {
-      "mocha": true
+  "extends": [
+    "@pwrs"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2022
+  },
+  "overrides": [
+    {
+      "files": [
+        "test/*.test.js"
+      ],
+      "env": {
+        "mocha": true
+      }
+    },
+    {
+      "files": [
+        "test/service-workers/*.js"
+      ],
+      "env": {
+        "serviceworker": true
+      }
     }
-  }]
+  ]
 }

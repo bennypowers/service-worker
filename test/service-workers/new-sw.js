@@ -1,8 +1,6 @@
-/* eslint-env serviceworker */
-
 const channel = new BroadcastChannel('service-worker');
 
-addEventListener('install', function(event) {
+addEventListener('install', function() {
   skipWaiting();
-  channel.postMessage({action: 'refresh'});
+  channel.postMessage({ action: 'refresh' });
 });

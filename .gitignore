@@ -2,5 +2,7 @@ coverage
 node_modules/
 .atom/
 .vscode/
+service-worker-element.js
+custom-elements.json
 
 *.d.ts
