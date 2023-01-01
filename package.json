@@ -31,14 +31,14 @@
     "LICENSE.md"
   ],
   "devDependencies": {
-    "@open-wc/testing": "^2.5.19",
-    "@pwrs/eslint-config": "0.0.7",
-    "@web/dev-server-rollup": "^0.1.2",
-    "@web/test-runner": "^0.6.36",
-    "eslint": "^7.5.0",
-    "lit-html": "^1.2.1",
+    "@open-wc/testing": "^3.1.7",
+    "@pwrs/eslint-config": "^0.0.26",
+    "@web/dev-server-rollup": "^0.3.19",
+    "@web/test-runner": "^0.15.0",
+    "eslint": "^8.31.0",
+    "lit-html": "^2.5.0",
     "npm-run-all": "^4.1.5",
-    "sinon": "^9.0.2",
+    "sinon": "^15.0.1",
     "web-component-analyzer": "^1.1.6"
   }
 }
