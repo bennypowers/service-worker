@@ -22,30 +22,37 @@ Custom Element for declaratively adding a service worker with optional auto-upda
 
 ## Properties
 
-| Property        | Attribute       | Type            | Default              | Description                                      |
-|-----------------|-----------------|-----------------|----------------------|--------------------------------------------------|
-| `autoReload`    | `auto-reload`   | `boolean`       | false                | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
-| `channelName`   | `channel-name`  | `string`        | "service-worker"     | Channel name for communicating with the service worker. |
-| `error`         | `error`         | `Error`         | null                 | Error state of the service-worker registration   |
-| `installed`     | `installed`     | `boolean`       | false                | True when the service worker is installed.       |
-| `path`          | `path`          | `string`        | "/service-worker.js" | Path to the service worker script.               |
-| `scope`         | `scope`         | `string`        | "/"                  | Scope for the service worker.                    |
-| `serviceWorker` |                 | `ServiceWorker` | null                 | A reference to the service worker instance.      |
-| `updateAction`  | `update-action` | `string`        | "skipWaiting"        | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
+| Property        | Attribute       | Type                    | Default              | Description                                      |
+|-----------------|-----------------|-------------------------|----------------------|--------------------------------------------------|
+| `autoReload`    | `auto-reload`   | `boolean`               | false                | If true, when updates are found, the page will automatically<br />reload, so long as the user has not yet interacted with it. |
+| `channelName`   | `channel-name`  | `string \| null`        | "service-worker"     | Channel name for communicating with the service worker. |
+| `error`         | `error`         | `Error`                 |                      | Error state of the service-worker registration   |
+| `installed`     | `installed`     | `boolean`               | false                | True when the service worker is installed.       |
+| `path`          | `path`          | `string`                | "/service-worker.js" | Path to the service worker script.               |
+| `scope`         | `scope`         | `string`                | "/"                  | Scope for the service worker.                    |
+| `serviceWorker` |                 | `ServiceWorker \| null` | null                 | A reference to the service worker instance.      |
+| `updateAction`  | `update-action` | `string \| null`        | "skipWaiting"        | String passed to serviceWorker which triggers self.skipWaiting().<br />String will be passed in message.action. |
 
 ## Methods
 
 | Method                  | Type                                             | Description                                      |
 |-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `registerServiceWorker` | `(options?: { path?: string; scope?: string; updateAction?: string; }): Promise<ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed<br /><br />**options.path**: Path to the sw script |
+| `#onError`              | `(error: Error): Error`                          | Sets the error property                          |
+| `#onRegistration`       | `(reg: ServiceWorkerRegistration): ServiceWorkerRegistration` |                                                  |
+| `#refresh`              | `(): void`                                       |                                                  |
+| `#track`                | `(serviceWorker: ServiceWorker): ServiceWorker`  | Listen for changes on a new worker, notify when installed. 🍞 |
+| `#update`               | `(serviceWorker: ServiceWorker): ServiceWorker`  | When an update is found, if user has not yet interacted with the page,<br />reload it for them, otherwise, prompt them to reload 🍩. |
+| `#updateChannelName`    | `(): void`                                       |                                                  |
+| `#updateConfig`         | `(): void`                                       |                                                  |
+| `registerServiceWorker` | `(options?: Partial<Pick<ServiceWorkerElement, "path" \| "scope" \| "updateAction">> \| undefined): Promise<void \| ServiceWorkerRegistration>` | Registers a service worker, and prompts to update as needed |
 
 ## Events
 
-| Event     | Description                                      |
-|-----------|--------------------------------------------------|
-| `change`  | When the service worker changes                  |
-| `error`   | When an error occurs                             |
-| `message` | When a message is received on the broadcast channel |
+| Event     | Type                        | Description                                      |
+|-----------|-----------------------------|--------------------------------------------------|
+| `change`  | `ServiceWorkerChangeEvent`  | When the service worker changes                  |
+| `error`   | `ServiceWorkerErrorEvent`   | When an error occurs                             |
+| `message` | `ServiceWorkerMessageEvent` | When a message is received on the broadcast channel |
 
 ## Updating the Service Worker.
 

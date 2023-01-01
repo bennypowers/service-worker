@@ -9,36 +9,42 @@
   "scripts": {
     "test": "wtr --coverage",
     "test:watch": "wtr --watch",
-    "lint": "eslint service-worker.js",
+    "lint": "eslint .",
     "build": "run-p build:*",
-    "prebuild:tsc": "rm -f service-worker.d.ts",
+    "clean": "git clean -fX -e node_modules",
+    "prebuild": "npm run clean",
     "build:tsc": "tsc",
     "build:analyze": "npm run analyze",
     "analyze": "run-s analyze:*",
-    "analyze:json": "wca analyze service-worker.js --outFile custom-elements.json",
-    "analyze:markdown": "wca analyze service-worker.js --silent >> README.md",
+    "analyze:json": "wca analyze service-worker-element.ts --outFile custom-elements.json",
+    "analyze:markdown": "wca analyze service-worker-element.ts --silent >> README.md",
     "preanalyze:markdown": "cp docs/README.header.md README.md",
     "postanalyze:markdown": "cat docs/README.footer.md >> README.md",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build"
   },
-  "main": "service-worker.js",
-  "module": "service-worker.js",
   "type": "module",
+  "main": "service-worker-element.js",
+  "module": "service-worker-element.js",
+  "exports": {
+    ".": "./service-worker-element.js"
+  },
   "files": [
-    "service-worker.js",
-    "service-worker.d.ts",
-    "custom-elements.json",
-    "LICENSE.md"
+    "service-worker-element.js",
+    "service-worker-element.d.ts",
+    "custom-elements.json"
   ],
   "devDependencies": {
     "@open-wc/testing": "^3.1.7",
     "@pwrs/eslint-config": "^0.0.26",
+    "@web/dev-server-esbuild": "^0.3.3",
     "@web/dev-server-rollup": "^0.3.19",
     "@web/test-runner": "^0.15.0",
+    "@web/test-runner-playwright": "^0.9.0",
     "eslint": "^8.31.0",
     "lit-html": "^2.5.0",
     "npm-run-all": "^4.1.5",
     "sinon": "^15.0.1",
+    "typescript": "^4.9.4",
     "web-component-analyzer": "^1.1.6"
   }
 }
